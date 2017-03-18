@@ -15,5 +15,7 @@ public class CPU {
   public byte[] ch2 = {0};
   public byte[] ch3 = {0};
   public byte[] sd = {0};
+  public static int sp;
+  public static byte sd;
 
 }
