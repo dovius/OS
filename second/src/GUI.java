@@ -1,11 +1,14 @@
+/*
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+*/
 /**
  * Created by dovydas on 17.3.14.
- */
+ *//*
+
 public class GUI {
   private boolean isLoaded;
   private boolean isRunning;
@@ -146,3 +149,4 @@ public class GUI {
     this.window.repaint();
   }
 }
+*/

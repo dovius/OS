@@ -1,3 +1,5 @@
+import java.io.*;
+
 /**
  * Created by dovydas on 17.3.8.
  */
@@ -10,18 +12,42 @@ public class PhysicalMachine {
     externalMemory = new ExternalMemory();
   }
 
-  public void run() {
-    String command = "LO";
-    while (true) {
-      switch (command) {
-        case "LO":
+  public void readProgram(String fileName) {
+    try(BufferedReader br = new BufferedReader(new FileReader(fileName))) {
+      StringBuilder sb = new StringBuilder();
+      String line = br.readLine();
 
-          break;
-        case "STEP":
 
-          break;
+      while (line != null) {
+        sb.append(line);
+        sb.append(System.lineSeparator());
+        line = br.readLine();
       }
+      String everything = sb.toString();
+    } catch (FileNotFoundException e) {
+      e.printStackTrace();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+
+
+  }
+
+  public void run() {
+    readProgram("program.txt");
+
+
+
+//    String command = "LO";
+//    while (true) {
+//      switch (command) {
+//        case "LO":
+//
+//          break;
+//        case "STEP":
+//
+//          break;
+//      }
       VirtualMachine virtualMachine = new VirtualMachine();
     }
-  }
 }
