@@ -73,7 +73,7 @@ public class VirtualMachine {
 //    }
 //    ++PhysicalMachine.pc;
   }
-  //TO DO VISI JUMPAI NUŠOKA DUOTU ADRESU
+  //TODO VISI JUMPAI NUŠOKA DUOTU ADRESU
   //JMx1x2 - besąlyginio valdymo perdavimo komanda. Ji reiškia, kad valdymas turi būti perduotas kodo segmento žodžiui, nurodytam adresu 16 * x1 + x2
   public static void JM(String address) {
     ++PhysicalMachine.pc;
@@ -125,23 +125,27 @@ public class VirtualMachine {
 
   public static void PUSH(){
     PhysicalMachine.sp++;
-    //TO DO PUSH TO STACK PhysicalMachine.r
+    //TODO PUSH TO STACK PhysicalMachine.r
+      ++PhysicalMachine.pc;
   }
   public static void POP(){
-    //TO DO POP FROM STACK TO PhysicalMachine.r
+    //TODO POP FROM STACK TO PhysicalMachine.r
     PhysicalMachine.sp--;
-
+    ++PhysicalMachine.pc;
   }
   public static void PRNL(){
     System.out.print('\n');
+    ++PhysicalMachine.pc;
   }
   public static void GD(String x, String y){
       Integer.parseInt(x, 16);
       Integer.parseInt(y, 16);
+      ++PhysicalMachine.pc;
   }
   public static void PD(String x, String y){
       Integer.parseInt(x, 16);
       Integer.parseInt(y, 16);
+      ++PhysicalMachine.pc;
   }
 
 }
