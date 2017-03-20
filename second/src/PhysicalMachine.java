@@ -41,7 +41,6 @@ public class PhysicalMachine {
           program += (char) c;
         }
       }
-      // todo change second parameter to dynamic
       programs.add(program.length() * 2);
       externalMemory.write(program.toCharArray(), 0);
     } catch (IOException e) {
@@ -106,30 +105,43 @@ public class PhysicalMachine {
 
     showMemory(virtualMachine, 0);
     showMemory(virtualMachine, 1);
+    showRegisters(virtualMachine);
+
+    boolean stepMode = true;
 
     String com;
     while (!(com = getCommand(virtualMachine)).equals("HALT") && virtualMachine.pc < 15) {
       try {
         PhysicalMachine.resolveCommand(com, virtualMachine);
+        System.out.println("command executed: "+ com);
+        showMemory(virtualMachine, 1);
+        showRegisters(virtualMachine);
       } catch (Exception e) {
         System.out.println("error executing VM commands");
       }
     }
 
-    System.out.println("***AFTER PROGRAM EXECUTION***");
+    System.out.println("*AFTER EXECUTION*");
     showMemory(virtualMachine, 0);
     showMemory(virtualMachine, 1);
+    showRegisters(virtualMachine);
   }
 
   public String getCommand(VirtualMachine vm) {
     return vm.memory.getBlock(1).get(++vm.pc);
   }
 
+  public void showRegisters(VirtualMachine vm) {
+    System.out.print("VM sp:" + vm.sp + " pc:" +pc + "     " + "PM SF:" +getOF()+getSF()+getZF()+getCF());
+    System.out.print('\n');
+  }
+
   public void showMemory(VirtualMachine vm, int block) {
-    System.out.println("BLOCK - " + block);
+    System.out.print("BLOCK" + block+" ");
     for (int i = 0; i < 16; i++) {
-      System.out.println("cell " + i + " -> " + vm.memory.getBlock(block).getWord(i).getValue());
+      System.out.print(i+":"+vm.memory.getBlock(block).getWord(i).getValue()+" ");
     }
+    System.out.print('\n');
   }
 
   public static void setRegisters() {
