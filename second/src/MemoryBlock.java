@@ -1,9 +1,9 @@
 public class MemoryBlock {
   private Word[] data;
-  public final int MEMORY_BLOCK_SIZE = 16;
+  public int memoryBlockSize;
 
-  MemoryBlock() {
-    data = new Word[MEMORY_BLOCK_SIZE];
+  MemoryBlock(int blockSize) {
+    data = new Word[blockSize];
     for (int i = 0; i < data.length; i++)
       data[i] = new Word();
   }
@@ -17,6 +17,11 @@ public class MemoryBlock {
   }
 
   public int getBlockSize() {
-    return MEMORY_BLOCK_SIZE;
+    return memoryBlockSize;
+  }
+
+  // TODO
+  public void push(Word word){
+
   }
 }

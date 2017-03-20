@@ -8,7 +8,7 @@ public class PhysicalMachine {
   private CPU cpu;
   private ExternalMemory externalMemory;
   private RealMemory realMemory;
-  private ArrayList<Integer> programs = new ArrayList<>();
+  public static ArrayList<Integer> programs = new ArrayList<>();
 
   public static byte mode;
   public static char ptr;
@@ -59,7 +59,6 @@ public class PhysicalMachine {
     return result;
   }
   public static void  resolveCommand(String line) throws  Exception {
-
     if (line.substring(0, 3).equals("ADD")) {
       VirtualMachine.ADD();
     } else if (line.substring(0, 3).equals("SUB")) {
@@ -96,11 +95,12 @@ public class PhysicalMachine {
       VirtualMachine.PD(line.substring(2, 3), line.substring(3, 4));
     }
   }
+
   public void run() {
     loadProgram("program.txt");
     String program = ExternalMemory.read(programs.get(0), 0);
     VirtualMachine virtualMachine = new VirtualMachine();
-
+    virtualMachine.fillMemory();
     }
   public static void setOF(){
         sf[0] = 1;

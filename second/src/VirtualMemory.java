@@ -1,9 +1,11 @@
-public class RealMemory {
-
+/**
+ * Created by dovydas on 17.3.20.
+ */
+public class VirtualMemory {
   private MemoryBlock[] memory;
   private final int MAX_MEMORY_BLOCKS;
 
-  RealMemory(int blocks) {
+  VirtualMemory(int blocks) {
     MAX_MEMORY_BLOCKS = blocks;
     memory = new MemoryBlock[blocks];
     for (int i = 0; i < blocks; i++)

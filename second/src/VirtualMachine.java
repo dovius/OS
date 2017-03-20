@@ -1,66 +1,77 @@
+import java.util.ArrayList;
+
 public class VirtualMachine {
 
-  private static char[][] memory = new char[1][16];
- // private Memory memory;
+  private static VirtualMemory memory;
+   // private Memory memory;
 
   VirtualMachine() {
+    memory = new VirtualMemory(2);
   }
+
+  public void fillMemory() {
+    String program = ExternalMemory.read(PhysicalMachine.programs.get(0), 0);
+    String[] statements = program.split(";");
+    int memoryPointer = 0;
+    memory.getBlock(0).setWord(++memoryPointer, );
+  }
+
   //  Jeigu rezultatas netelpa, OF = 1. Jeigu reikšmės ženklo bitas yra 1, SF = 1.
   public static void ADD() {
-    if (memory[0][PhysicalMachine.sp] + memory[0][PhysicalMachine.sp-2] > Integer.MAX_VALUE) {
-      PhysicalMachine.setOF();
-      return;
-    } else {
-      memory[0][PhysicalMachine.sp] += memory[0][PhysicalMachine.sp-2];
-    }
-    if (((memory[0][PhysicalMachine.sp] >> 6) & 1) == 1) {
-      PhysicalMachine.setSF();
-    }
-    ++PhysicalMachine.pc;
+//    if (memory[0][PhysicalMachine.sp] + memory[0][PhysicalMachine.sp-2] > Integer.MAX_VALUE) {
+//      PhysicalMachine.setOF();
+//      return;
+//    } else {
+//      memory[0][PhysicalMachine.sp] += memory[0][PhysicalMachine.sp-2];
+//    }
+//    if (((memory[0][PhysicalMachine.sp] >> 6) & 1) == 1) {
+//      PhysicalMachine.setSF();
+//    }
+//    ++PhysicalMachine.pc;
   }
 
   public static void SUB() {
-    if (memory[0][PhysicalMachine.sp] - memory[0][PhysicalMachine.sp-2] < Integer.MIN_VALUE) {
-      PhysicalMachine.setOF();
-      return;
-    } else {
-      memory[0][PhysicalMachine.sp] -= memory[0][PhysicalMachine.sp-2];
-    }
-    if (((memory[0][PhysicalMachine.sp] >> 6) & 1) == 1) {
-      PhysicalMachine.setSF();
-    }
-    ++PhysicalMachine.pc;
+//    if (memory[0][PhysicalMachine.sp] - memory[0][PhysicalMachine.sp-2] < Integer.MIN_VALUE) {
+//      PhysicalMachine.setOF();
+//      return;
+//    } else {
+//      memory[0][PhysicalMachine.sp] -= memory[0][PhysicalMachine.sp-2];
+//    }
+//    if (((memory[0][PhysicalMachine.sp] >> 6) & 1) == 1) {
+//      PhysicalMachine.setSF();
+//    }
+//    ++PhysicalMachine.pc;
   }
   public static void MUL() {
-    if (memory[0][PhysicalMachine.sp] * memory[0][PhysicalMachine.sp-2] > Integer.MAX_VALUE) {
-      PhysicalMachine.setOF();
-      return;
-    } else {
-      memory[0][PhysicalMachine.sp] *= memory[0][PhysicalMachine.sp-2];
-    }
-    if (((memory[0][PhysicalMachine.sp] >> 6) & 1) == 1) {
-      PhysicalMachine.setSF();
-    }
-    ++PhysicalMachine.pc;
+//    if (memory[0][PhysicalMachine.sp] * memory[0][PhysicalMachine.sp-2] > Integer.MAX_VALUE) {
+//      PhysicalMachine.setOF();
+//      return;
+//    } else {
+//      memory[0][PhysicalMachine.sp] *= memory[0][PhysicalMachine.sp-2];
+//    }
+//    if (((memory[0][PhysicalMachine.sp] >> 6) & 1) == 1) {
+//      PhysicalMachine.setSF();
+//    }
+//    ++PhysicalMachine.pc;
   }
 
   // Padalina R1 iš R2, įrašoma į R1. Jeigu reikšmės ženklo bitas yra 1, SF = 1.
   public static void DIV() {
-    memory[0][PhysicalMachine.sp] /= memory[0][PhysicalMachine.sp-2];
-    if (((memory[0][PhysicalMachine.sp] >> 6) & 1) == 1) {
-      PhysicalMachine.setSF();
-    }
-    ++PhysicalMachine.pc;
+//    memory[0][PhysicalMachine.sp] /= memory[0][PhysicalMachine.sp-2];
+//    if (((memory[0][PhysicalMachine.sp] >> 6) & 1) == 1) {
+//      PhysicalMachine.setSF();
+//    }
+//    ++PhysicalMachine.pc;
   }
 
   //Ši komanda palygina registre R1 ir R2 ęsančias reikšmes. Jeigu reikšmės lygios, ZF = 1, priešingu atveju ZF = 0.
   public static void CMP() {
-    if (memory[0][PhysicalMachine.sp] == memory[0][PhysicalMachine.sp-2]) {
-      PhysicalMachine.setZF();
-    } else {
-      PhysicalMachine.clearZF();
-    }
-    ++PhysicalMachine.pc;
+//    if (memory[0][PhysicalMachine.sp] == memory[0][PhysicalMachine.sp-2]) {
+//      PhysicalMachine.setZF();
+//    } else {
+//      PhysicalMachine.clearZF();
+//    }
+//    ++PhysicalMachine.pc;
   }
   //TO DO VISI JUMPAI NUŠOKA DUOTU ADRESU
   //JMx1x2 - besąlyginio valdymo perdavimo komanda. Ji reiškia, kad valdymas turi būti perduotas kodo segmento žodžiui, nurodytam adresu 16 * x1 + x2

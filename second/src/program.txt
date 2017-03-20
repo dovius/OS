@@ -1,5 +1,9 @@
 #DATASEG:
-DW "laba"
+"laba";
+"ives";
+"k sa";
+"vo v";
+"arda";
 #CODESEG:
 PD
 HALT
