@@ -7,6 +7,7 @@ import java.util.ArrayList;
 public class PhysicalMachine {
   private CPU cpu;
   private ExternalMemory externalMemory;
+  private RealMemory realMemory;
   private ArrayList<Integer> programs = new ArrayList<>();
 
   public static byte mode;
@@ -27,6 +28,7 @@ public class PhysicalMachine {
   public PhysicalMachine() {
     cpu = new CPU();
     externalMemory = new ExternalMemory();
+    realMemory = new RealMemory(16);
   }
 
   public void loadProgram(String fileName) {
@@ -98,6 +100,7 @@ public class PhysicalMachine {
     loadProgram("program.txt");
     String program = ExternalMemory.read(programs.get(0), 0);
     VirtualMachine virtualMachine = new VirtualMachine();
+
     }
   public static void setOF(){
         sf[0] = 1;
