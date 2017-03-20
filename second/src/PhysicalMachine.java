@@ -11,7 +11,7 @@ public class PhysicalMachine {
   public static ArrayList<Integer> programs = new ArrayList<>();
 
   public static byte mode;
-  public static char ptr;
+ // public static char ptr;
   public static int sp;
   public static int pc;
   public static int r;
@@ -149,10 +149,11 @@ public class PhysicalMachine {
   public static void clearSF(){
     sf[1] = 0;
   }
-  public static void clearZF(){
-    sf[2] = 0;
-  }
+
   public static void clearCF(){
     sf[3] = 0;
   }*/
+ public static void clearZF(){
+   sf[2] = 0;
+ }
 }

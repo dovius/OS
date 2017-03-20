@@ -8,13 +8,16 @@ public class VirtualMachine {
   public static int sp;
   public static int pc;
    // private Memory memory;
-
+    public static final int MAX_INT = 65535;
   VirtualMachine() {
     memory = new VirtualMemory(2);
     sp = 0;
     pc = 0;
   }
-
+  String com;
+while ((com = getCommand(pc)) != 'HALT'){
+      PhysicalMachine.resolveCommand(com);
+    }
   public void fillMemory() throws IOException {
     String program = ExternalMemory.read(PhysicalMachine.programs.get(0), 0);
     String[] statements = program.split(";");
@@ -41,126 +44,157 @@ public class VirtualMachine {
 
   //  Jeigu rezultatas netelpa, OF = 1. Jeigu reikšmės ženklo bitas yra 1, SF = 1.
   public static void ADD() {
-//    if (memory[0][PhysicalMachine.sp] + memory[0][PhysicalMachine.sp-2] > Integer.MAX_VALUE) {
-//      PhysicalMachine.setOF();
-//      return;
-//    } else {
-//      memory[0][PhysicalMachine.sp] += memory[0][PhysicalMachine.sp-2];
-//    }
-//    if (((memory[0][PhysicalMachine.sp] >> 6) & 1) == 1) {
-//      PhysicalMachine.setSF();
-//    }
-//    ++PhysicalMachine.pc;
+      String a = memory.getBlock(0).pop();
+      int a1 = Integer.parseInt(a, 16);
+
+      String b = memory.getBlock(0).pop();
+      int b1 = Integer.parseInt(b, 16);
+
+    if (a1 + b1 > MAX_INT) {
+      PhysicalMachine.setCF();
+    }
+    a1 += b1;
+    if (((a1 >> 6) & 1) == 1) {
+      PhysicalMachine.setSF();
+    }
+      memory.getBlock(0).push(String.valueOf(b1));
+      memory.getBlock(0).push(String.valueOf(a1));
+    ++PhysicalMachine.pc;
   }
 
   public static void SUB() {
-//    if (memory[0][PhysicalMachine.sp] - memory[0][PhysicalMachine.sp-2] < Integer.MIN_VALUE) {
-//      PhysicalMachine.setOF();
-//      return;
-//    } else {
-//      memory[0][PhysicalMachine.sp] -= memory[0][PhysicalMachine.sp-2];
-//    }
-//    if (((memory[0][PhysicalMachine.sp] >> 6) & 1) == 1) {
-//      PhysicalMachine.setSF();
-//    }
-//    ++PhysicalMachine.pc;
+      String a = memory.getBlock(0).pop();
+      int a1 = Integer.parseInt(a, 16);
+
+      String b = memory.getBlock(0).pop();
+      int b1 = Integer.parseInt(b, 16);
+
+    if (a1 - b1 < 0) {
+      PhysicalMachine.setOF();
+      return;
+    } else {
+      a1 -= b1;
+    }
+    if (((a1 >> 6) & 1) == 1) {
+      PhysicalMachine.setSF();
+    }
+      memory.getBlock(0).push(String.valueOf(b1));
+      memory.getBlock(0).push(String.valueOf(a1));
+    ++PhysicalMachine.pc;
   }
   public static void MUL() {
-//    if (memory[0][PhysicalMachine.sp] * memory[0][PhysicalMachine.sp-2] > Integer.MAX_VALUE) {
-//      PhysicalMachine.setOF();
-//      return;
-//    } else {
-//      memory[0][PhysicalMachine.sp] *= memory[0][PhysicalMachine.sp-2];
-//    }
-//    if (((memory[0][PhysicalMachine.sp] >> 6) & 1) == 1) {
-//      PhysicalMachine.setSF();
-//    }
-//    ++PhysicalMachine.pc;
+      String a = memory.getBlock(0).pop();
+      int a1 = Integer.parseInt(a, 16);
+
+      String b = memory.getBlock(0).pop();
+      int b1 = Integer.parseInt(b, 16);
+    if (a1 * b1 > MAX_INT) {
+      PhysicalMachine.setOF();
+      return;
+    } else {
+      a1 *= b1;
+    }
+    if (((a1 >> 6) & 1) == 1) {
+      PhysicalMachine.setSF();
+    }
+      memory.getBlock(0).push(String.valueOf(b1));
+      memory.getBlock(0).push(String.valueOf(a1));
+    ++PhysicalMachine.pc;
   }
 
   // Padalina R1 iš R2, įrašoma į R1. Jeigu reikšmės ženklo bitas yra 1, SF = 1.
   public static void DIV() {
-//    memory[0][PhysicalMachine.sp] /= memory[0][PhysicalMachine.sp-2];
-//    if (((memory[0][PhysicalMachine.sp] >> 6) & 1) == 1) {
-//      PhysicalMachine.setSF();
-//    }
-//    ++PhysicalMachine.pc;
+      String a = memory.getBlock(0).pop();
+      int a1 = Integer.parseInt(a, 16);
+
+      String b = memory.getBlock(0).pop();
+      int b1 = Integer.parseInt(b, 16);
+    a1 /= b1;
+    if (((a1 >> 6) & 1) == 1) {
+      PhysicalMachine.setSF();
+    }
+      memory.getBlock(0).push(String.valueOf(b1));
+      memory.getBlock(0).push(String.valueOf(a1));
+    ++PhysicalMachine.pc;
   }
 
   //Ši komanda palygina registre R1 ir R2 ęsančias reikšmes. Jeigu reikšmės lygios, ZF = 1, priešingu atveju ZF = 0.
   public static void CMP() {
-//    if (memory[0][PhysicalMachine.sp] == memory[0][PhysicalMachine.sp-2]) {
-//      PhysicalMachine.setZF();
-//    } else {
-//      PhysicalMachine.clearZF();
-//    }
-//    ++PhysicalMachine.pc;
+      String a = memory.getBlock(0).pop();
+      int a1 = Integer.parseInt(a, 16);
+
+      String b = memory.getBlock(0).pop();
+      int b1 = Integer.parseInt(b, 16);
+
+    if (a1 == b1) {
+      PhysicalMachine.setZF();
+    } else {
+      PhysicalMachine.clearZF();
+    }
+      memory.getBlock(0).push(String.valueOf(b1));
+      memory.getBlock(0).push(String.valueOf(a1));
+    ++PhysicalMachine.pc;
   }
   //TODO VISI JUMPAI NUŠOKA DUOTU ADRESU
   //JMx1x2 - besąlyginio valdymo perdavimo komanda. Ji reiškia, kad valdymas turi būti perduotas kodo segmento žodžiui, nurodytam adresu 16 * x1 + x2
   public static void JM(String address) {
-      Integer.parseInt(address, 16);
-    ++PhysicalMachine.pc;
+     pc = Integer.parseInt(address, 16);
+
   }
 
   //JEx1x2 - valdymas turi būti perduotas kodo segmento žodžiui, nurodytam adresu 16* x1 + x2 jeigu ZF = 1
   public static void JE(String address) {
     if (PhysicalMachine.getZF() == 1) {
-      Integer.parseInt(address, 16);
+      pc = Integer.parseInt(address, 16);
     }
-    ++PhysicalMachine.pc;
+
   }
   //JNx1x2 - valdymas turi būti perduotas kodo segmentui, nurodytam adresu 16*x1+x2, jeigu ZF = 0
   public static void JN(String address){
     if(PhysicalMachine.getZF() == 0) {
-      Integer.parseInt(address, 16);
+     pc = Integer.parseInt(address, 16);
     }
-    ++PhysicalMachine.pc;
+
   }
   //JAx1x2 - valdymas turi būti perduotas kodo segmento žodžiui, nurodytam adresu 16* x1 + x2 jeigu CF = OF
   public static void JA(String address) {
     if (PhysicalMachine.getCF() == 0) {
-      Integer.parseInt(address, 16);
+      pc = Integer.parseInt(address, 16);
     }
-    ++PhysicalMachine.pc;
   }
   //JBx1x2 - valdymas turi būti perduotas kodo segmento žodžiui, nurodytam adresu 16* x1 + x2 jeigu CF=1
   public static void JB(String address){
     if(PhysicalMachine.getCF() == 1){
-      Integer.parseInt(address, 16);
+      pc = Integer.parseInt(address, 16);
     }
-    ++PhysicalMachine.pc;
   }
   //JGx1x2 - valdymas turi būti perduotas kodo segmento žodžiui, nurodytam adresu 16* x1 + x2 jeigu ZF = 0 IR SF = OF
   public static void JG(String address) {
     if (PhysicalMachine.getZF() == 0 && PhysicalMachine.getSF() == PhysicalMachine.getOF()) {
-      Integer.parseInt(address, 16);
+     pc = Integer.parseInt(address, 16);
     }
-    ++PhysicalMachine.pc;
   }
 
   //JLx1x2 - valdymas turi būti perduotas kodo segmento žodžiui, nurodytam adresu 16* x1 + x2 jeigu SF != OF
   public static void JL(String address) {
     if (PhysicalMachine.getSF() != PhysicalMachine.getOF()) {
-      Integer.parseInt(address, 16);
+      pc = Integer.parseInt(address, 16);
     }
-    ++PhysicalMachine.pc;
   }
 
   public static void PUSH(){
-    PhysicalMachine.sp++;
-    //TODO PUSH TO STACK PhysicalMachine.r
+      memory.getBlock(0).push(String.valueOf(PhysicalMachine.r));
       ++PhysicalMachine.pc;
   }
   public static void POP(){
-    //TODO POP FROM STACK TO PhysicalMachine.r
-    PhysicalMachine.sp--;
+     PhysicalMachine.r = Integer.parseInt(memory.getBlock(0).pop(), 16);
     ++PhysicalMachine.pc;
   }
   public static void PRNL(){
     System.out.print('\n');
     ++PhysicalMachine.pc;
   }
+  //TODO SUTARKYT GD IR PD
   public static void GD(String x, String y){
       Integer.parseInt(x, 16);
       Integer.parseInt(y, 16);
