@@ -1,4 +1,5 @@
 import java.io.*;
+import java.util.ArrayList;
 
 /**
  * Created by dovydas on 17.3.8.
@@ -6,6 +7,7 @@ import java.io.*;
 public class PhysicalMachine {
   private CPU cpu;
   private ExternalMemory externalMemory;
+  private ArrayList<Integer> programs = new ArrayList<>();
 
   public static byte mode;
   public static char ptr;
@@ -27,43 +29,38 @@ public class PhysicalMachine {
     externalMemory = new ExternalMemory();
   }
 
-  public void readProgram(String fileName) {
-    try(BufferedReader br = new BufferedReader(new FileReader(fileName))) {
-      StringBuilder sb = new StringBuilder();
-      String line = br.readLine();
+  public void loadProgram(String fileName) {
+    try (FileReader fr = new FileReader(fileName);
+         BufferedReader br = new BufferedReader(fr)) {
 
-
-      while (line != null) {
-        sb.append(line);
-        sb.append(System.lineSeparator());
-        line = br.readLine();
+      int c;
+      String program = "";
+      int charCount = 0;
+      while ((c = br.read()) != -1) {
+        if (c > 20 && c < 150) {
+          charCount++;
+          program += (char) c;
+        }
       }
-      String everything = sb.toString();
-    } catch (FileNotFoundException e) {
-      e.printStackTrace();
+      // todo change second parameter to dynamic
+      programs.add(program.length() * 2);
+      externalMemory.write(program.toCharArray(), 0);
     } catch (IOException e) {
       e.printStackTrace();
     }
+  }
+
+  public String readProgram(int offset) {
+    String result = new String();
 
 
+    return result;
   }
 
   public void run() {
-    readProgram("program.txt");
-
-
-
-//    String command = "LO";
-//    while (true) {
-//      switch (command) {
-//        case "LO":
-//
-//          break;
-//        case "STEP":
-//
-//          break;
-//      }
-      VirtualMachine virtualMachine = new VirtualMachine();
+    loadProgram("program.txt");
+    String program = ExternalMemory.read(programs.get(0), 0);
+    VirtualMachine virtualMachine = new VirtualMachine();
     }
   public static void setOF(){
         sf[0] = 1;

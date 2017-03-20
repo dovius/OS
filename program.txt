@@ -1,5 +1,5 @@
 #DATASEG:
-DW "laba"
+DW "laba";
 #CODESEG:
-PD
-HALT
+PD;
+HALT;
