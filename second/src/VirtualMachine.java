@@ -62,6 +62,7 @@ public class VirtualMachine {
     }
     ++PhysicalMachine.pc;
   }
+  //TO DO VISI JUMPAI NUŠOKA DUOTU ADRESU
   //JMx1x2 - besąlyginio valdymo perdavimo komanda. Ji reiškia, kad valdymas turi būti perduotas kodo segmento žodžiui, nurodytam adresu 16 * x1 + x2
   public void JM(String address) {
     ++PhysicalMachine.pc;
@@ -70,15 +71,35 @@ public class VirtualMachine {
   //JEx1x2 - valdymas turi būti perduotas kodo segmento žodžiui, nurodytam adresu 16* x1 + x2 jeigu ZF = 1
   public void JE(String address) {
     if (PhysicalMachine.getZF() == 1) {
-      //processCommands() tik paduot parametra, nuo kurios vietos vykdyt koda
+      Integer.parseInt(address, 16);
     }
     ++PhysicalMachine.pc;
   }
-
+  //JNx1x2 - valdymas turi būti perduotas kodo segmentui, nurodytam adresu 16*x1+x2, jeigu ZF = 0
+  public void JN(String address){
+    if(PhysicalMachine.getZF() == 0) {
+      Integer.parseInt(address, 16);
+    }
+    ++PhysicalMachine.pc;
+  }
+  //JAx1x2 - valdymas turi būti perduotas kodo segmento žodžiui, nurodytam adresu 16* x1 + x2 jeigu CF = OF
+  public void JA(String address) {
+    if (PhysicalMachine.getCF() == 0) {
+      Integer.parseInt(address, 16);
+    }
+    ++PhysicalMachine.pc;
+  }
+  //JBx1x2 - valdymas turi būti perduotas kodo segmento žodžiui, nurodytam adresu 16* x1 + x2 jeigu CF=1
+  public void JB(String address){
+    if(PhysicalMachine.getCF() == 1){
+      Integer.parseInt(address, 16);
+    }
+    ++PhysicalMachine.pc;
+  }
   //JGx1x2 - valdymas turi būti perduotas kodo segmento žodžiui, nurodytam adresu 16* x1 + x2 jeigu ZF = 0 IR SF = OF
   public void JG(String address) {
     if (PhysicalMachine.getZF() == 0 && PhysicalMachine.getSF() == PhysicalMachine.getOF()) {
-
+      Integer.parseInt(address, 16);
     }
     ++PhysicalMachine.pc;
   }
@@ -91,11 +112,22 @@ public class VirtualMachine {
     ++PhysicalMachine.pc;
   }
 
-  //JAx1x2 - valdymas turi būti perduotas kodo segmento žodžiui, nurodytam adresu 16* x1 + x2 jeigu CF = OF
-  public void JA(String address) {
-    if (PhysicalMachine.getCF() == 0) {
-      Integer.parseInt(address, 16);
-    }
-    ++PhysicalMachine.pc;
+  public void PUSH(){
+    PhysicalMachine.sp++;
+    //TO DO PUSH TO STACK PhysicalMachine.r
+  }
+  public void POP(){
+    //TO DO POP FROM STACK TO PhysicalMachine.r
+    PhysicalMachine.sp--;
+
+  }
+  public void PRNL(){
+    System.out.print('\n');
+  }
+  public void GD(int x, int y){
+
+  }
+  public void PD(int x, int y){
+
   }
 }
