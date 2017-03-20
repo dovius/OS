@@ -20,11 +20,19 @@ public class MemoryBlock {
     return memoryBlockSize;
   }
 
-  public void push(String data) {
-    getWord(++VirtualMachine.sp).setValue(data);
+  public void push(String data, int sp) {
+    getWord(sp).setValue(data);
   }
 
-  public String pop() {
-    return getWord(--VirtualMachine.sp).getValue();
+  public String pop(int sp) {
+    return getWord(sp).getValue();
+  }
+
+  public void put(String data, int offset) {
+    getWord(offset).setValue(data);
+  }
+
+  public String get(int offset) {
+    return getWord(offset).getValue();
   }
 }

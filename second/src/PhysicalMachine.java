@@ -11,7 +11,6 @@ public class PhysicalMachine {
   public static ArrayList<Integer> programs = new ArrayList<>();
 
   public static byte mode;
- // public static char ptr;
   public static int sp;
   public static int pc;
   public static int r;
@@ -22,35 +21,23 @@ public class PhysicalMachine {
   public static byte ch1;
   public static byte ch2;
   public static byte ch3;
-  public static byte[] sf = {0,0,0,0}; //0-OF, 1-SF, 2-ZF, 3-CF
+  public static byte[] sf = {0, 0, 0, 0}; //0-OF, 1-SF, 2-ZF, 3-CF
 
   public PhysicalMachine() {
     cpu = new CPU();
     externalMemory = new ExternalMemory();
     realMemory = new RealMemory(16);
+    setRegisters();
   }
-  public static void setRegisters(){
-    sp = 0;
-    ch1 = 0;
-    ch2 = 0;
-    ch3 = 0;
-    r = 0;
-    mode = 0;
-    ti = 1;
-    si = 0;
-    pi = 0;
-    ioi = 0;
-  }
+
   public void loadProgram(String fileName) {
     try (FileReader fr = new FileReader(fileName);
          BufferedReader br = new BufferedReader(fr)) {
 
       int c;
       String program = "";
-      int charCount = 0;
       while ((c = br.read()) != -1) {
         if (c > 20 && c < 150) {
-          charCount++;
           program += (char) c;
         }
       }
@@ -64,96 +51,140 @@ public class PhysicalMachine {
 
   public String readProgram(int offset) {
     String result = new String();
-
-
     return result;
   }
-  public static void  resolveCommand(String line) throws  Exception {
+
+  public static void resolveCommand(String line, VirtualMachine vm) throws Exception {
     if (line.substring(0, 3).equals("ADD")) {
-      VirtualMachine.ADD();
+      vm.ADD();
     } else if (line.substring(0, 3).equals("SUB")) {
-      VirtualMachine.SUB();
+      vm.SUB();
     } else if (line.substring(0, 3).equals("MUL")) {
-      VirtualMachine.MUL();
+      vm.MUL();
     } else if (line.substring(0, 3).equals("DIV")) {
-      VirtualMachine.DIV();
+      vm.DIV();
     } else if (line.substring(0, 3).equals("CMP")) {
-      VirtualMachine.CMP();
+      vm.CMP();
     } else if (line.substring(0, 2).equals("JM")) {
-      VirtualMachine.JM(line.substring(2, 4));
+      vm.JM(line.substring(2, 4));
     } else if (line.substring(0, 2).equals("JE")) {
-      VirtualMachine.JE(line.substring(2, 4));
+      vm.JE(line.substring(2, 4));
     } else if (line.substring(0, 2).equals("JG")) {
-      VirtualMachine.JG(line.substring(2, 4));
+      vm.JG(line.substring(2, 4));
     } else if (line.substring(0, 2).equals("JL")) {
-      VirtualMachine.JL(line.substring(2, 4));
+      vm.JL(line.substring(2, 4));
     } else if (line.substring(0, 2).equals("JA")) {
-      VirtualMachine.JA(line.substring(2, 4));
+      vm.JA(line.substring(2, 4));
     } else if (line.substring(0, 2).equals("JB")) {
-      VirtualMachine.JB(line.substring(2, 4));
+      vm.JB(line.substring(2, 4));
     } else if (line.substring(0, 2).equals("JN")) {
-      VirtualMachine.JN(line.substring(2, 4));
+      vm.JN(line.substring(2, 4));
     } else if (line.equals("PUSH")) {
-      VirtualMachine.PUSH();
+      vm.PUSH();
     } else if (line.equals("POP")) {
-      VirtualMachine.POP();
+      vm.POP();
     } else if (line.equals("PRNL")) {
-      VirtualMachine.PRNL();
+      vm.PRNL();
     } else if (line.substring(0, 2).equals("GD")) {
-      VirtualMachine.GD(line.substring(2, 3), line.substring(3, 4));
+      vm.GD(line.substring(2, 3), line.substring(3, 4));
     } else if (line.substring(0, 2).equals("PD")) {
-      VirtualMachine.PD(line.substring(2, 3), line.substring(3, 4));
+      vm.PD(line.substring(2, 3), line.substring(3, 4));
     }
   }
 
   public void run() {
     loadProgram("program.txt");
-    String program = ExternalMemory.read(programs.get(0), 0);
+    ExternalMemory.read(programs.get(0), 0);
     VirtualMachine virtualMachine = new VirtualMachine();
+
     try {
       virtualMachine.fillMemory();
       mode = 1;
     } catch (IOException e) {
       System.out.println("error filling VM memory");
     }
+
+    showMemory(virtualMachine, 0);
+    showMemory(virtualMachine, 1);
+
+    String com = getCommand(virtualMachine);
+    while (!com.equals("HALT") || virtualMachine.pc < 16) {
+      try {
+        PhysicalMachine.resolveCommand(com, virtualMachine);
+      } catch (Exception e) {
+        System.out.println("error executing VM commands");
+      }
+      com = getCommand(virtualMachine);
+    }
   }
-  public static void setOF(){
-        sf[0] = 1;
+
+  public String getCommand(VirtualMachine vm) {
+    return vm.memory.getBlock(1).get(vm.pc++);
   }
-  public static void setSF(){
+
+  public void showMemory(VirtualMachine vm, int block) {
+    System.out.println("     block - " + block);
+    for (int i = 0; i < 16; i++) {
+      System.out.println("cell " + i + " -> " + vm.memory.getBlock(block).getWord(i).getValue());
+    }
+  }
+
+  public static void setRegisters() {
+    sp = 0;
+    ch1 = 0;
+    ch2 = 0;
+    ch3 = 0;
+    r = 0;
+    mode = 0;
+    ti = 1;
+    si = 0;
+    pi = 0;
+    ioi = 0;
+  }
+
+  public static void setOF() {
+    sf[0] = 1;
+  }
+
+  public static void setSF() {
     sf[1] = 1;
   }
-  public static void setZF(){
+
+  public static void setZF() {
     sf[2] = 1;
   }
-  public static void setCF(){
+
+  public static void setCF() {
     sf[3] = 1;
   }
 
-  public static byte getOF(){
+  public static byte getOF() {
     return sf[0];
   }
-  public static byte getSF(){
+
+  public static byte getSF() {
     return sf[1];
   }
-  public static byte getZF(){
+
+  public static byte getZF() {
     return sf[2];
   }
-  public static byte getCF(){
+
+  public static byte getCF() {
     return sf[3];
   }
 
- /* public static void clearOF(){
-    sf[0] = 0;
-  }
-  public static void clearSF(){
-    sf[1] = 0;
-  }
+  /* public static void clearOF(){
+     sf[0] = 0;
+   }
+   public static void clearSF(){
+     sf[1] = 0;
+   }
 
-  public static void clearCF(){
-    sf[3] = 0;
-  }*/
- public static void clearZF(){
-   sf[2] = 0;
- }
+   public static void clearCF(){
+     sf[3] = 0;
+   }*/
+  public static void clearZF() {
+    sf[2] = 0;
+  }
 }
