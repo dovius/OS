@@ -5,6 +5,7 @@ import java.util.ArrayList;
  * Created by dovydas on 17.3.8.
  */
 //ttv
+//grtrkt
 public class PhysicalMachine {
   private CPU cpu;
   private ExternalMemory externalMemory;
