@@ -107,15 +107,18 @@ public class PhysicalMachine {
     showMemory(virtualMachine, 0);
     showMemory(virtualMachine, 1);
 
-    String com = getCommand(virtualMachine);
-    while (!com.equals("HALT") || virtualMachine.pc < 16) {
+    String com;
+    while (!(com = getCommand(virtualMachine)).equals("HALT") && virtualMachine.pc < 15) {
       try {
         PhysicalMachine.resolveCommand(com, virtualMachine);
       } catch (Exception e) {
         System.out.println("error executing VM commands");
       }
-      com = getCommand(virtualMachine);
     }
+
+    System.out.println("AFTER PROGRAM EXECUTION");
+    showMemory(virtualMachine, 0);
+    showMemory(virtualMachine, 1);
   }
 
   public String getCommand(VirtualMachine vm) {
