@@ -25,6 +25,7 @@ public class MemoryBlock {
   }
 
   public String pop(int sp) {
+    getWord(sp+1).setValue("0000");
     return getWord(sp).getValue();
   }
 

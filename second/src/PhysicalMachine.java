@@ -116,17 +116,17 @@ public class PhysicalMachine {
       }
     }
 
-    System.out.println("AFTER PROGRAM EXECUTION");
+    System.out.println("***AFTER PROGRAM EXECUTION***");
     showMemory(virtualMachine, 0);
     showMemory(virtualMachine, 1);
   }
 
   public String getCommand(VirtualMachine vm) {
-    return vm.memory.getBlock(1).get(vm.pc++);
+    return vm.memory.getBlock(1).get(++vm.pc);
   }
 
   public void showMemory(VirtualMachine vm, int block) {
-    System.out.println("     block - " + block);
+    System.out.println("BLOCK - " + block);
     for (int i = 0; i < 16; i++) {
       System.out.println("cell " + i + " -> " + vm.memory.getBlock(block).getWord(i).getValue());
     }

@@ -31,10 +31,10 @@ public class VirtualMachine {
           status = "code";
           continue;
         }
-        memory.getBlock(0).push(statement, sp++);
+        memory.getBlock(0).push(statement, ++sp);
       }
       if (status.equals("code")) {
-        memory.getBlock(1).put(statement, pc++);
+        memory.getBlock(1).put(statement, ++pc);
       }
     }
     pc = 0;
@@ -55,8 +55,8 @@ public class VirtualMachine {
     if (((a1 >> 6) & 1) == 1) {
       PhysicalMachine.setSF();
     }
-    memory.getBlock(0).push(String.valueOf(b1), sp++);
-    memory.getBlock(0).push(String.valueOf(a1), sp++);
+    memory.getBlock(0).push(String.valueOf(b1), ++sp);
+    memory.getBlock(0).push(String.valueOf(a1), ++sp);
     ++PhysicalMachine.pc;
   }
 
@@ -76,8 +76,8 @@ public class VirtualMachine {
     if (((a1 >> 6) & 1) == 1) {
       PhysicalMachine.setSF();
     }
-    memory.getBlock(0).push(String.valueOf(b1), sp++);
-    memory.getBlock(0).push(String.valueOf(a1), sp++);
+    memory.getBlock(0).push(String.valueOf(b1), ++sp);
+    memory.getBlock(0).push(String.valueOf(a1), ++sp);
     ++PhysicalMachine.pc;
   }
 
@@ -96,8 +96,8 @@ public class VirtualMachine {
     if (((a1 >> 6) & 1) == 1) {
       PhysicalMachine.setSF();
     }
-    memory.getBlock(0).push(String.valueOf(b1), sp++);
-    memory.getBlock(0).push(String.valueOf(a1), sp++);
+    memory.getBlock(0).push(String.valueOf(b1), ++sp);
+    memory.getBlock(0).push(String.valueOf(a1), ++sp);
     ++PhysicalMachine.pc;
   }
 
@@ -112,8 +112,8 @@ public class VirtualMachine {
     if (((a1 >> 6) & 1) == 1) {
       PhysicalMachine.setSF();
     }
-    memory.getBlock(0).push(String.valueOf(b1), sp++);
-    memory.getBlock(0).push(String.valueOf(a1), sp++);
+    memory.getBlock(0).push(String.valueOf(b1), ++sp);
+    memory.getBlock(0).push(String.valueOf(a1), ++sp);
     ++PhysicalMachine.pc;
   }
 
@@ -130,8 +130,8 @@ public class VirtualMachine {
     } else {
       PhysicalMachine.clearZF();
     }
-    memory.getBlock(0).push(String.valueOf(b1), sp++);
-    memory.getBlock(0).push(String.valueOf(a1), sp++);
+    memory.getBlock(0).push(String.valueOf(b1), ++sp);
+    memory.getBlock(0).push(String.valueOf(a1), ++sp);
     ++PhysicalMachine.pc;
   }
 
@@ -187,7 +187,7 @@ public class VirtualMachine {
   }
 
   public void PUSH() {
-    memory.getBlock(0).push(String.valueOf(PhysicalMachine.r), sp++);
+    memory.getBlock(0).push(String.valueOf(PhysicalMachine.r), ++sp);
     ++PhysicalMachine.pc;
   }
 
