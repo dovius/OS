@@ -1,5 +1,0 @@
-#DATASEG:
-DW "laba"
-#CODESEG:
-PD
-HALT
