@@ -2,6 +2,7 @@ import java.util.ArrayList;
 
 public class VirtualMachine {
 
+ // private Memory memory;
   private static VirtualMemory memory;
    // private Memory memory;
 
@@ -76,6 +77,7 @@ public class VirtualMachine {
   //TODO VISI JUMPAI NUŠOKA DUOTU ADRESU
   //JMx1x2 - besąlyginio valdymo perdavimo komanda. Ji reiškia, kad valdymas turi būti perduotas kodo segmento žodžiui, nurodytam adresu 16 * x1 + x2
   public static void JM(String address) {
+      Integer.parseInt(address, 16);
     ++PhysicalMachine.pc;
   }
 

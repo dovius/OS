@@ -24,7 +24,6 @@ public class PhysicalMachine {
   public static byte ch1;
   public static byte ch2;
   public static byte ch3;
-  public static byte sd;
   public static byte[] sf = {0,0,0,0}; //0-OF, 1-SF, 2-ZF, 3-CF
 
   public PhysicalMachine() {
@@ -32,7 +31,18 @@ public class PhysicalMachine {
     externalMemory = new ExternalMemory();
     realMemory = new RealMemory(16);
   }
-
+  public static void setRegisters(){
+    sp = 0;
+    ch1 = 0;
+    ch2 = 0;
+    ch3 = 0;
+    r = 0;
+    mode = 0;
+    ti = 1;
+    si = 0;
+    pi = 0;
+    ioi = 0;
+  }
   public void loadProgram(String fileName) {
     try (FileReader fr = new FileReader(fileName);
          BufferedReader br = new BufferedReader(fr)) {
@@ -103,6 +113,7 @@ public class PhysicalMachine {
     String program = ExternalMemory.read(programs.get(0), 0);
     VirtualMachine virtualMachine = new VirtualMachine();
     virtualMachine.fillMemory();
+    mode = 1;
     }
   public static void setOF(){
         sf[0] = 1;
@@ -130,7 +141,7 @@ public class PhysicalMachine {
     return sf[3];
   }
 
-  public static void clearOF(){
+ /* public static void clearOF(){
     sf[0] = 0;
   }
   public static void clearSF(){
@@ -141,5 +152,5 @@ public class PhysicalMachine {
   }
   public static void clearCF(){
     sf[3] = 0;
-  }
+  }*/
 }
