@@ -20,8 +20,11 @@ public class MemoryBlock {
     return memoryBlockSize;
   }
 
-  // TODO
-  public void push(Word word){
+  public void push(String data) {
+    getWord(++VirtualMachine.sp).setValue(data);
+  }
 
+  public String pop() {
+    return getWord(--VirtualMachine.sp).getValue();
   }
 }

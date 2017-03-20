@@ -4,8 +4,6 @@ import java.util.ArrayList;
 /**
  * Created by dovydas on 17.3.8.
  */
-//ttv
-//grtrkt
 public class PhysicalMachine {
   private CPU cpu;
   private ExternalMemory externalMemory;
@@ -112,9 +110,13 @@ public class PhysicalMachine {
     loadProgram("program.txt");
     String program = ExternalMemory.read(programs.get(0), 0);
     VirtualMachine virtualMachine = new VirtualMachine();
-    virtualMachine.fillMemory();
-    mode = 1;
+    try {
+      virtualMachine.fillMemory();
+      mode = 1;
+    } catch (IOException e) {
+      System.out.println("error filling VM memory");
     }
+  }
   public static void setOF(){
         sf[0] = 1;
   }

@@ -1,20 +1,42 @@
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class VirtualMachine {
 
  // private Memory memory;
   private static VirtualMemory memory;
+  public static int sp;
+  public static int pc;
    // private Memory memory;
 
   VirtualMachine() {
     memory = new VirtualMemory(2);
+    sp = 0;
+    pc = 0;
   }
 
-  public void fillMemory() {
+  public void fillMemory() throws IOException {
     String program = ExternalMemory.read(PhysicalMachine.programs.get(0), 0);
     String[] statements = program.split(";");
-    int memoryPointer = 0;
-    memory.getBlock(0).setWord(++memoryPointer, );
+    String status = "begin";
+    for (String statement : statements) {
+      if (status.equals("begin")) {
+        if (statement.equals("#DATASEG")) {
+          status = "data";
+          continue;
+        }
+        else {
+          throw new IOException();
+        }
+      }
+      if (status.equals("data")) {
+        if (statement.equals("#CODESEG")) {
+          status = "code";
+          continue;
+        }
+        memory.getBlock(0).push(statement);
+      }
+    }
   }
 
   //  Jeigu rezultatas netelpa, OF = 1. Jeigu reikšmės ženklo bitas yra 1, SF = 1.

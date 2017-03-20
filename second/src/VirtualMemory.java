@@ -19,4 +19,8 @@ public class VirtualMemory {
   public int getMaxMemoryBlocks() {
     return MAX_MEMORY_BLOCKS;
   }
+
+  public void push(Word word) {
+    getBlock(0).setWord(++VirtualMachine.sp, word);
+  }
 }
