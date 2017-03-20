@@ -56,7 +56,44 @@ public class PhysicalMachine {
 
     return result;
   }
+  public static void  resolveCommand(String line) throws  Exception {
 
+    if (line.substring(0, 3).equals("ADD")) {
+      VirtualMachine.ADD();
+    } else if (line.substring(0, 3).equals("SUB")) {
+      VirtualMachine.SUB();
+    } else if (line.substring(0, 3).equals("MUL")) {
+      VirtualMachine.MUL();
+    } else if (line.substring(0, 3).equals("DIV")) {
+      VirtualMachine.DIV();
+    } else if (line.substring(0, 3).equals("CMP")) {
+      VirtualMachine.CMP();
+    } else if (line.substring(0, 2).equals("JM")) {
+      VirtualMachine.JM(line.substring(2, 4));
+    } else if (line.substring(0, 2).equals("JE")) {
+      VirtualMachine.JE(line.substring(2, 4));
+    } else if (line.substring(0, 2).equals("JG")) {
+      VirtualMachine.JG(line.substring(2, 4));
+    } else if (line.substring(0, 2).equals("JL")) {
+      VirtualMachine.JL(line.substring(2, 4));
+    } else if (line.substring(0, 2).equals("JA")) {
+      VirtualMachine.JA(line.substring(2, 4));
+    } else if (line.substring(0, 2).equals("JB")) {
+      VirtualMachine.JB(line.substring(2, 4));
+    } else if (line.substring(0, 2).equals("JN")) {
+      VirtualMachine.JN(line.substring(2, 4));
+    } else if (line.equals("PUSH")) {
+      VirtualMachine.PUSH();
+    } else if (line.equals("POP")) {
+      VirtualMachine.POP();
+    } else if (line.equals("PRNL")) {
+      VirtualMachine.PRNL();
+    } else if (line.substring(0, 2).equals("GD")) {
+      VirtualMachine.GD(line.substring(2, 3), line.substring(3, 4));
+    } else if (line.substring(0, 2).equals("PD")) {
+      VirtualMachine.PD(line.substring(2, 3), line.substring(3, 4));
+    }
+  }
   public void run() {
     loadProgram("program.txt");
     String program = ExternalMemory.read(programs.get(0), 0);
