@@ -70,10 +70,10 @@ public class VirtualMachine {
 
   //  Jeigu rezultatas netelpa, OF = 1. Jeigu reikšmės ženklo bitas yra 1, SF = 1.
   public void ADD() {
-    String a = memory.getBlock(0).pop(sp--);
+    String a = memory.getBlock(0).pop(--sp);
     int a1 = Integer.parseInt(a, 16);
 
-    String b = memory.getBlock(0).pop(sp--);
+    String b = memory.getBlock(0).pop(--sp);
     int b1 = Integer.parseInt(b, 16);
 
     if (a1 + b1 > MAX_INT) {

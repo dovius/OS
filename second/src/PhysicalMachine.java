@@ -39,29 +39,31 @@ public class PhysicalMachine {
       virtualMachine.fillMemory();
       mode = 1;
 
+      System.out.println("### VM memory filled");
+      showMemory(virtualMachine, 0);
+      showMemory(virtualMachine, 1);
+      showRegisters(virtualMachine);
 
-    System.out.println("### VM memory filled");
-    showMemory(virtualMachine, 0);
-    showMemory(virtualMachine, 1);
-    showRegisters(virtualMachine);
-
-    boolean stepMode = true;
-    System.out.println("### VM started program");
-    String com;
-    while (!(com = getCommand(virtualMachine)).equals("HALT")  && virtualMachine.pc < 15) {
+      boolean stepMode = true;
+      System.out.println("### VM started program");
+      String com;
+      while (!(com = getCommand(virtualMachine)).equals("HALT") && virtualMachine.pc < 15) {
         PhysicalMachine.resolveCommand(com, virtualMachine);
         System.out.println("command executed: " + com);
         showMemory(virtualMachine, 0);
         showMemory(virtualMachine, 1);
         showRegisters(virtualMachine);
-    }
+        if (stepMode) {
+          System.in.read();
+        }
+      }
 
-    System.out.println("*Vm executed program*");
-    showMemory(virtualMachine, 0);
-    showMemory(virtualMachine, 1);
-    showRegisters(virtualMachine);
-    freeMemory(virtualMachine, 2);
-    } catch (IOException e ) {
+      System.out.println("*Vm executed program*");
+      showMemory(virtualMachine, 0);
+      showMemory(virtualMachine, 1);
+      showRegisters(virtualMachine);
+      freeMemory(virtualMachine, 2);
+    } catch (IOException e) {
       System.out.println("memory error " + e);
     } catch (Exception e) {
       System.out.println("Error executing VM commands ");
@@ -72,7 +74,6 @@ public class PhysicalMachine {
   public void loadProgram(String fileName) {
     try (FileReader fr = new FileReader(fileName);
          BufferedReader br = new BufferedReader(fr)) {
-
       int c;
       String program = "";
       while ((c = br.read()) != -1) {
@@ -129,7 +130,6 @@ public class PhysicalMachine {
       vm.PD(line.substring(2, 3), line.substring(3, 4));
     }
   }
-
 
   public String getCommand(VirtualMachine vm) {
     return vm.memory.getBlock(1).get(vm.pc++);
