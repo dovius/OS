@@ -3,6 +3,7 @@ import java.io.IOException;
 public class VirtualMachine {
 
   public static final int MAX_INT = 65535;
+  public String[] commands = {"add", "sub", "mul", "div", "je", "jn", "jm", "ja", "cmp", "jb", "jl", "push", "pop", "prln", "gd", "pd"};
   public VirtualMemory memory;
   public int sp;
   public int pc;
@@ -13,6 +14,7 @@ public class VirtualMachine {
     pc = 0;
   }
 
+  // TODO interuptai
   public void fillMemory() throws IOException {
     String program = ExternalMemory.read(PhysicalMachine.programs.get(0), 0);
     String[] statements = program.split(";");
@@ -23,7 +25,7 @@ public class VirtualMachine {
           status = "data";
           continue;
         } else {
-          throw new IOException();
+          throw new IOException("Bad program structure");
         }
       }
       if (status.equals("data")) {
@@ -34,10 +36,22 @@ public class VirtualMachine {
         memory.getBlock(0).push(statement, ++sp);
       }
       if (status.equals("code")) {
+        if ("code".equals(status)) {
+          checkStatement(statement);
+        }
         memory.getBlock(1).put(statement, ++pc);
       }
     }
     pc = 0;
+  }
+
+  public boolean checkStatement(String statement) throws IOException {
+    for (String command : commands) {
+      if (command.toLowerCase().equals(statement.toLowerCase())) {
+        return true;
+      }
+    }
+    throw new IOException("invalid statement");
   }
 
   //  Jeigu rezultatas netelpa, OF = 1. Jeigu reikšmės ženklo bitas yra 1, SF = 1.

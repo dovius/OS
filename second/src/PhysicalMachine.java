@@ -100,20 +100,22 @@ public class PhysicalMachine {
       virtualMachine.fillMemory();
       mode = 1;
     } catch (IOException e) {
-      System.out.println("error filling VM memory");
+      System.out.println("memorry error" + e);
     }
 
+    System.out.println("*VM memory filled");
     showMemory(virtualMachine, 0);
     showMemory(virtualMachine, 1);
     showRegisters(virtualMachine);
 
     boolean stepMode = true;
-
+    System.out.println("*VM started program");
     String com;
     while (!(com = getCommand(virtualMachine)).equals("HALT") && virtualMachine.pc < 15) {
       try {
         PhysicalMachine.resolveCommand(com, virtualMachine);
-        System.out.println("command executed: "+ com);
+        System.out.println("command executed: " + com);
+        showMemory(virtualMachine, 0);
         showMemory(virtualMachine, 1);
         showRegisters(virtualMachine);
       } catch (Exception e) {
@@ -121,25 +123,34 @@ public class PhysicalMachine {
       }
     }
 
-    System.out.println("*AFTER EXECUTION*");
+    System.out.println("*Vm executed program*");
     showMemory(virtualMachine, 0);
     showMemory(virtualMachine, 1);
     showRegisters(virtualMachine);
+    freeMemory(virtualMachine, 2);
   }
 
   public String getCommand(VirtualMachine vm) {
     return vm.memory.getBlock(1).get(++vm.pc);
   }
 
+  public void freeMemory(VirtualMachine vm, int blocks) {
+    for (int i = 0; i < 2; i++) {
+      for (int j = 0; j < 16; j++) {
+        vm.memory.getBlock(i).setWord(j, new Word("   "));
+      }
+    }
+  }
+
   public void showRegisters(VirtualMachine vm) {
-    System.out.print("VM sp:" + vm.sp + " pc:" +pc + "     " + "PM SF:" +getOF()+getSF()+getZF()+getCF());
+    System.out.print("VM sp:" + vm.sp + " pc:" + pc + "     " + "PM SF:" + getOF() + getSF() + getZF() + getCF());
     System.out.print('\n');
   }
 
   public void showMemory(VirtualMachine vm, int block) {
-    System.out.print("BLOCK" + block+" ");
+    System.out.print("BLOCK" + block + " ");
     for (int i = 0; i < 16; i++) {
-      System.out.print(i+":"+vm.memory.getBlock(block).getWord(i).getValue()+" ");
+      System.out.print(i + ":" + vm.memory.getBlock(block).getWord(i).getValue() + " ");
     }
     System.out.print('\n');
   }
