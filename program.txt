@@ -5,6 +5,6 @@
 ADD;
 JB05;
 PRNL;
-GD12;
+GD1215;
 CMP;
 HALT;

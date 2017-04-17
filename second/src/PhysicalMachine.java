@@ -30,6 +30,45 @@ public class PhysicalMachine {
     setRegisters();
   }
 
+  public void run() {
+    loadProgram("program.txt");
+    ExternalMemory.read(programs.get(0), 0);
+    VirtualMachine virtualMachine = new VirtualMachine();
+
+    try {
+      virtualMachine.fillMemory();
+      mode = 1;
+
+
+    System.out.println("### VM memory filled");
+    showMemory(virtualMachine, 0);
+    showMemory(virtualMachine, 1);
+    showRegisters(virtualMachine);
+
+    boolean stepMode = true;
+    System.out.println("### VM started program");
+    String com;
+    while (!(com = getCommand(virtualMachine)).equals("HALT")  && virtualMachine.pc < 15) {
+        PhysicalMachine.resolveCommand(com, virtualMachine);
+        System.out.println("command executed: " + com);
+        showMemory(virtualMachine, 0);
+        showMemory(virtualMachine, 1);
+        showRegisters(virtualMachine);
+    }
+
+    System.out.println("*Vm executed program*");
+    showMemory(virtualMachine, 0);
+    showMemory(virtualMachine, 1);
+    showRegisters(virtualMachine);
+    freeMemory(virtualMachine, 2);
+    } catch (IOException e ) {
+      System.out.println("memory error " + e);
+    } catch (Exception e) {
+      System.out.println("Error executing VM commands ");
+    }
+  }
+
+
   public void loadProgram(String fileName) {
     try (FileReader fr = new FileReader(fileName);
          BufferedReader br = new BufferedReader(fr)) {
@@ -91,47 +130,9 @@ public class PhysicalMachine {
     }
   }
 
-  public void run() {
-    loadProgram("program.txt");
-    ExternalMemory.read(programs.get(0), 0);
-    VirtualMachine virtualMachine = new VirtualMachine();
-
-    try {
-      virtualMachine.fillMemory();
-      mode = 1;
-    } catch (IOException e) {
-      System.out.println("memorry error" + e);
-    }
-
-    System.out.println("*VM memory filled");
-    showMemory(virtualMachine, 0);
-    showMemory(virtualMachine, 1);
-    showRegisters(virtualMachine);
-
-    boolean stepMode = true;
-    System.out.println("*VM started program");
-    String com;
-    while (!(com = getCommand(virtualMachine)).equals("HALT") && virtualMachine.pc < 15) {
-      try {
-        PhysicalMachine.resolveCommand(com, virtualMachine);
-        System.out.println("command executed: " + com);
-        showMemory(virtualMachine, 0);
-        showMemory(virtualMachine, 1);
-        showRegisters(virtualMachine);
-      } catch (Exception e) {
-        System.out.println("error executing VM commands");
-      }
-    }
-
-    System.out.println("*Vm executed program*");
-    showMemory(virtualMachine, 0);
-    showMemory(virtualMachine, 1);
-    showRegisters(virtualMachine);
-    freeMemory(virtualMachine, 2);
-  }
 
   public String getCommand(VirtualMachine vm) {
-    return vm.memory.getBlock(1).get(++vm.pc);
+    return vm.memory.getBlock(1).get(vm.pc++);
   }
 
   public void freeMemory(VirtualMachine vm, int blocks) {

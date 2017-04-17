@@ -3,7 +3,7 @@ import java.io.IOException;
 public class VirtualMachine {
 
   public static final int MAX_INT = 65535;
-  public String[] commands = {"add", "sub", "mul", "div", "je", "jn", "jm", "ja", "cmp", "jb", "jl", "push", "pop", "prln", "gd", "pd"};
+  public String[] commands = {"add", "sub", "mul", "div", "je*", "jn*", "jm*", "ja*", "cmp", "jb*", "jl*", "push", "pop", "prnl", "gd**", "pd**", "halt"};
   public VirtualMemory memory;
   public int sp;
   public int pc;
@@ -15,7 +15,7 @@ public class VirtualMachine {
   }
 
   // TODO interuptai
-  public void fillMemory() throws IOException {
+  public void fillMemory() throws IOException, NumberFormatException {
     String program = ExternalMemory.read(PhysicalMachine.programs.get(0), 0);
     String[] statements = program.split(";");
     String status = "begin";
@@ -33,25 +33,39 @@ public class VirtualMachine {
           status = "code";
           continue;
         }
-        memory.getBlock(0).push(statement, ++sp);
+        memory.getBlock(0).push(statement, sp++);
       }
       if (status.equals("code")) {
         if ("code".equals(status)) {
           checkStatement(statement);
         }
-        memory.getBlock(1).put(statement, ++pc);
+        memory.getBlock(1).put(statement, pc++);
       }
     }
     pc = 0;
   }
 
-  public boolean checkStatement(String statement) throws IOException {
+  public boolean checkStatement(String statement) throws IOException, NumberFormatException {
     for (String command : commands) {
-      if (command.toLowerCase().equals(statement.toLowerCase())) {
+      if (command.toLowerCase().replace("*", "").equals(statement.toLowerCase())) {
         return true;
+      } else if (statement.toLowerCase().startsWith(command.toLowerCase().replace("*", ""))) {
+        boolean correctEnd = false;
+        while (command.endsWith("*")) {
+          command = command.substring(0, command.length() - 1);
+          int ending = Integer.valueOf(statement.substring(statement.length() - 2, statement.length()));
+          statement = statement.substring(0, statement.length() - 2);
+          correctEnd = ending > 0 && ending < 256;
+        }
+        if (command.toLowerCase().equals(statement.toLowerCase().toLowerCase()) && correctEnd) {
+          return true;
+        }
       }
     }
-    throw new IOException("invalid statement");
+    if (statement.replace(" ", "").equals("")) {
+      return true;
+    }
+    throw new IOException("invalid statement '" + statement +"'");
   }
 
   //  Jeigu rezultatas netelpa, OF = 1. Jeigu reikšmės ženklo bitas yra 1, SF = 1.
