@@ -36,4 +36,8 @@ public class MemoryBlock {
   public String get(int offset) {
     return getWord(offset).getValue();
   }
+
+  public void pushData(int offset, String data) {
+    this.data[offset].setValue(data);
+  }
 }

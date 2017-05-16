@@ -3,13 +3,14 @@ import java.io.IOException;
 public class VirtualMachine {
 
   public static final int MAX_INT = 65535;
-  public String[] commands = {"add", "sub", "mul", "div", "je*", "jn*", "jm*", "ja*", "cmp", "jb*", "jl*", "push", "pop", "prnl", "gd**", "pd**", "halt"};
+  public String[] commands = {"add", "sub", "mul", "div", "je*", "jn*", "jm*", "ja*", "cmp", "jb*", "jl*", "push",
+          "pop", "prnl", "gd**", "pd*", "halt", "ps*", "pd*", "pp*"};
   public VirtualMemory memory;
   public int sp;
   public int pc;
 
   VirtualMachine() {
-    memory = new VirtualMemory(2);
+    memory = new VirtualMemory(8);
     sp = 0;
     pc = 0;
   }
@@ -33,13 +34,10 @@ public class VirtualMachine {
           status = "code";
           continue;
         }
-        memory.getBlock(0).push(statement, sp++);
+        memory.pushData(statement);
       }
-      if (status.equals("code")) {
-        if ("code".equals(status)) {
-          checkStatement(statement);
-        }
-        memory.getBlock(1).put(statement, pc++);
+      if (status.equals("code") && checkStatement(statement)) {
+        memory.pushCode(statement);
       }
     }
     pc = 0;
@@ -55,7 +53,7 @@ public class VirtualMachine {
           command = command.substring(0, command.length() - 1);
           int ending = Integer.valueOf(statement.substring(statement.length() - 2, statement.length()));
           statement = statement.substring(0, statement.length() - 2);
-          correctEnd = ending > 0 && ending < 256;
+          correctEnd = ending >= 0 && ending < 256;
         }
         if (command.toLowerCase().equals(statement.toLowerCase().toLowerCase()) && correctEnd) {
           return true;
@@ -63,17 +61,26 @@ public class VirtualMachine {
       }
     }
     if (statement.replace(" ", "").equals("")) {
-      return true;
+      return false;
     }
     throw new IOException("invalid statement '" + statement +"'");
   }
 
+  public void PS(String address) {
+    String data = memory.getData(Integer.valueOf(address));
+    memory.push(data, sp++);
+  }
+
+  public String PP() {
+    return memory.pop(sp--);
+  }
+
   //  Jeigu rezultatas netelpa, OF = 1. Jeigu reikšmės ženklo bitas yra 1, SF = 1.
   public void ADD() {
-    String a = memory.getBlock(0).pop(--sp);
+    String a = memory.pop(sp--);
     int a1 = Integer.parseInt(a, 16);
 
-    String b = memory.getBlock(0).pop(--sp);
+    String b = memory.pop(sp--);
     int b1 = Integer.parseInt(b, 16);
 
     if (a1 + b1 > MAX_INT) {
@@ -83,8 +90,8 @@ public class VirtualMachine {
     if (((a1 >> 6) & 1) == 1) {
       PhysicalMachine.setSF();
     }
-    memory.getBlock(0).push(String.valueOf(b1), ++sp);
-    memory.getBlock(0).push(String.valueOf(a1), ++sp);
+    memory.push(String.valueOf(b1), sp++);
+    memory.push(String.valueOf(a1), sp++);
     ++PhysicalMachine.pc;
   }
 
@@ -229,17 +236,21 @@ public class VirtualMachine {
     ++PhysicalMachine.pc;
   }
 
-  //TODO SUTARKYT GD IR PD
   public void GD(String x, String y) {
     Integer.parseInt(x, 16);
-    Integer.parseInt(y, 16);
+
+
     ++PhysicalMachine.pc;
   }
 
-  public void PD(String x, String y) {
-    Integer.parseInt(x, 16);
-    Integer.parseInt(y, 16);
+  public String PD(String x, String y) {
     ++PhysicalMachine.pc;
+    return memory.getData(2);
   }
 
+  public void PP(String address) {
+    ++PhysicalMachine.pc;
+    String stackData = memory.pop(sp--);
+    memory.pushData(stackData, Integer.valueOf(address));
+  }
 }

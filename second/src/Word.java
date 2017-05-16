@@ -27,11 +27,15 @@ public class Word {
   }
 
   public void setValue(String s) {
-
-    if (s.length() <= 4)
+    if (s.length() <= 4) {
+      while (s.length() < 4) {
+        s = s + " ";
+      }
       data = s;
-    else
+    }
+    else {
       data = s.substring(0, 4);
+    }
   }
 
   public void setIntValue(int s) {

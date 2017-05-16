@@ -40,25 +40,22 @@ public class PhysicalMachine {
       mode = 1;
 
       System.out.println("### VM memory filled");
-      showMemory(virtualMachine, 0);
-      showMemory(virtualMachine, 1);
+      showMemory(virtualMachine);
       showRegisters(virtualMachine);
 
-      boolean stepMode = true;
       System.out.println("### VM started program");
       String com;
-      while (!(com = getCommand(virtualMachine)).equals("HALT") && virtualMachine.pc < 15) {
+      while (!(com = getCommand(virtualMachine)).equals("HALT")) {
         PhysicalMachine.resolveCommand(com, virtualMachine);
         System.out.println("command executed: " + com);
-        showMemory(virtualMachine, 0);
-        showMemory(virtualMachine, 1);
+        showMemory(virtualMachine);
         showRegisters(virtualMachine);
-        if (stepMode) {
+        if (Main.stepMode) {
           System.in.read();
         }
       }
 
-      System.out.println("*Vm executed program*");
+      System.out.println("### Vm executed program");
       showMemory(virtualMachine, 0);
       showMemory(virtualMachine, 1);
       showRegisters(virtualMachine);
@@ -93,7 +90,7 @@ public class PhysicalMachine {
     return result;
   }
 
-  public static void resolveCommand(String line, VirtualMachine vm) throws Exception {
+  public static String resolveCommand(String line, VirtualMachine vm) throws Exception {
     if (line.substring(0, 3).equals("ADD")) {
       vm.ADD();
     } else if (line.substring(0, 3).equals("SUB")) {
@@ -118,6 +115,8 @@ public class PhysicalMachine {
       vm.JB(line.substring(2, 4));
     } else if (line.substring(0, 2).equals("JN")) {
       vm.JN(line.substring(2, 4));
+    } else if (line.substring(0, 2).equals("PS")) {
+        vm.PS(line.substring(2, 4));
     } else if (line.equals("PUSH")) {
       vm.PUSH();
     } else if (line.equals("POP")) {
@@ -127,12 +126,25 @@ public class PhysicalMachine {
     } else if (line.substring(0, 2).equals("GD")) {
       vm.GD(line.substring(2, 3), line.substring(3, 4));
     } else if (line.substring(0, 2).equals("PD")) {
-      vm.PD(line.substring(2, 3), line.substring(3, 4));
+      si = 2;
+    } else if (line.substring(0, 2).equals("PP")) {
+      vm.PP(line.substring(2, 4));
     }
+    if (test()) {
+      handleInterrupt(vm, line);
+    }
+
+    ti++;
+    return null;
+  }
+
+  private static boolean test()
+  {
+    return si > 0 || pi > 0 || ti == 0;
   }
 
   public String getCommand(VirtualMachine vm) {
-    return vm.memory.getBlock(1).get(vm.pc++);
+    return vm.memory.getCode(vm.pc++);
   }
 
   public void freeMemory(VirtualMachine vm, int blocks) {
@@ -154,6 +166,31 @@ public class PhysicalMachine {
       System.out.print(i + ":" + vm.memory.getBlock(block).getWord(i).getValue() + " ");
     }
     System.out.print('\n');
+  }
+
+  public void showMemory(VirtualMachine vm) {
+    for (int blockIter = 0; blockIter < 8; blockIter++) {
+      System.out.print("BLOCK" + blockIter + " ");
+      for (int i = 0; i < 16; i++) {
+        System.out.print(i + ":" + vm.memory.getBlock(blockIter).getWord(i).getValue() + " ");
+      }
+      System.out.print('\n');
+    }
+  }
+
+  public static void resolveInterrupts(String interrupt, String data) {
+    if (interrupt.equals("PD")) {
+      System.out.println(data);
+    }
+  }
+
+
+  public static void handleInterrupt(VirtualMachine vm, String line) {
+    if (si == 2) {
+      String data = vm.PD(line.substring(2, 3), line.substring(3, 4));
+      resolveInterrupts(line.substring(0, 2), data);
+      System.out.println();
+    }
   }
 
   public static void setRegisters() {
