@@ -1,3 +1,6 @@
+import Memory.ExternalMemory;
+import Memory.VirtualMemory;
+
 import java.io.IOException;
 
 public class VirtualMachine {
@@ -8,15 +11,17 @@ public class VirtualMachine {
   public VirtualMemory memory;
   public int sp;
   public int pc;
+  public int ptr;
 
   VirtualMachine() {
-    memory = new VirtualMemory(8);
+    memory = new VirtualMemory(ptr);
     sp = 0;
     pc = 0;
   }
 
   // TODO interuptai
-  public void fillMemory() throws IOException, NumberFormatException {
+  public void fillMemory(int ptr) throws IOException, NumberFormatException {
+    this.ptr = ptr;
     String program = ExternalMemory.read(PhysicalMachine.programs.get(0), 0);
     String[] statements = program.split(";");
     String status = "begin";

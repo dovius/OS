@@ -1,9 +1,13 @@
+package Memory;
+
 /**
  * Created by dovydas on 17.3.20.
  */
 public class VirtualMemory {
   private MemoryBlock[] memory;
-  private final int MAX_MEMORY_BLOCKS;
+  public static final int MAX_VIRTUAL_MEMORY_BLOCKS = 8;
+  public int ptr;
+  public RealMemory realMemory;
 /*
    code segment blocks 0 - 2
    data segment 3 - 5
@@ -15,19 +19,22 @@ public class VirtualMemory {
   // code, data, stack
   private int[] currentOffset = {0, 0, 0};
 
-  VirtualMemory(int blocks) {
-    MAX_MEMORY_BLOCKS = blocks;
-    memory = new MemoryBlock[blocks];
-    for (int i = 0; i < blocks; i++)
-      memory[i] = new MemoryBlock(16);
+  public VirtualMemory(int prt) {
+    this.ptr=prt;
+    memory = new MemoryBlock[MAX_VIRTUAL_MEMORY_BLOCKS];
+    for (int i = 0; i < MAX_VIRTUAL_MEMORY_BLOCKS; i++)
+      memory[i] = new MemoryBlock();
+  }
+
+  public void syncMemory() {
+//    MemoryBlock pageTable = realMemory.getBlock(ptr);
+//    for (int i = 0; i < MAX_MEMORY_BLOCKS; i++) {
+//      realMemory.setBlock(pageTable.getWord(i).getIntValue(), memory[i]);
+//    }
   }
 
   public MemoryBlock getBlock(int index) {
     return memory[index];
-  }
-
-  public int getMaxMemoryBlocks() {
-    return MAX_MEMORY_BLOCKS;
   }
 
   public void pushCode(String statement) {
@@ -42,6 +49,7 @@ public class VirtualMemory {
     }
     getBlock(currentBlock[0]).pushData(currentOffset[0], statement);
     currentOffset[0]++;
+    syncMemory();
   }
 
   public void pushData(String statement) {
@@ -56,14 +64,17 @@ public class VirtualMemory {
     }
     getBlock(currentBlock[1]).pushData(currentOffset[1], statement);
     currentOffset[1]++;
+    syncMemory();
   }
 
   public void pushData(String data, int pointer) {
     getBlock(segments[1] + pointer / 16).pushData(pointer % 16, data);
+    syncMemory();
   }
 
   public void push(String data, int pointer) {
     getBlock(segments[2] + pointer / 16).pushData(pointer % 16, data);
+    syncMemory();
   }
 
   public String getCode(int pointer) {
@@ -78,6 +89,7 @@ public class VirtualMemory {
     pointer--;
     String data = getBlock(segments[2] + pointer / 16).get(pointer % 16);
     getBlock(segments[2] + pointer / 16).pushData(pointer % 16, "0000");
+    syncMemory();
     return data;
   }
 }

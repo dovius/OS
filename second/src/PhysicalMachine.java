@@ -1,3 +1,5 @@
+import Memory.*;
+
 import java.io.*;
 import java.util.ArrayList;
 
@@ -5,15 +7,17 @@ import java.util.ArrayList;
  * Created by dovydas on 17.3.8.
  */
 public class PhysicalMachine {
+  public static int MAX_REAL_MEMORY_BLOCKS = 16;
   private CPU cpu;
   private ExternalMemory externalMemory;
-  private RealMemory realMemory;
+  public MemoryBlock[] realMemory;
+  public Paging paging;
   public static ArrayList<Integer> programs = new ArrayList<>();
-
   public static byte mode;
   public static int sp;
   public static int pc;
   public static int r;
+  public static int ptr;
   public static byte ti;
   public static byte si;
   public static byte pi;
@@ -26,17 +30,19 @@ public class PhysicalMachine {
   public PhysicalMachine() {
     cpu = new CPU();
     externalMemory = new ExternalMemory();
-    realMemory = new RealMemory(16);
+    paging = new Paging();
     setRegisters();
+    initRealMemory();
   }
 
   public void run() {
-    loadProgram("program.txt");
-    ExternalMemory.read(programs.get(0), 0);
-    VirtualMachine virtualMachine = new VirtualMachine();
-
     try {
-      virtualMachine.fillMemory();
+      loadProgram("program.txt");
+      ExternalMemory.read(programs.get(0), 0);
+      VirtualMachine virtualMachine = new VirtualMachine();
+      ptr = paging.getFreeBlock(realMemory);
+      realMemory[ptr] = paging.getPageTable(realMemory);
+      virtualMachine.fillMemory(ptr);
       mode = 1;
 
       System.out.println("### VM memory filled");
@@ -47,8 +53,10 @@ public class PhysicalMachine {
       String com;
       while (!(com = getCommand(virtualMachine)).equals("HALT")) {
         PhysicalMachine.resolveCommand(com, virtualMachine);
+        syncMemory(virtualMachine);
         System.out.println("command executed: " + com);
         showMemory(virtualMachine);
+        showMemory(realMemory);
         showRegisters(virtualMachine);
         if (Main.stepMode) {
           System.in.read();
@@ -116,7 +124,7 @@ public class PhysicalMachine {
     } else if (line.substring(0, 2).equals("JN")) {
       vm.JN(line.substring(2, 4));
     } else if (line.substring(0, 2).equals("PS")) {
-        vm.PS(line.substring(2, 4));
+      vm.PS(line.substring(2, 4));
     } else if (line.equals("PUSH")) {
       vm.PUSH();
     } else if (line.equals("POP")) {
@@ -138,8 +146,7 @@ public class PhysicalMachine {
     return null;
   }
 
-  private static boolean test()
-  {
+  private static boolean test() {
     return si > 0 || pi > 0 || ti == 0;
   }
 
@@ -169,6 +176,7 @@ public class PhysicalMachine {
   }
 
   public void showMemory(VirtualMachine vm) {
+    System.out.println("---- VM ----");
     for (int blockIter = 0; blockIter < 8; blockIter++) {
       System.out.print("BLOCK" + blockIter + " ");
       for (int i = 0; i < 16; i++) {
@@ -176,6 +184,19 @@ public class PhysicalMachine {
       }
       System.out.print('\n');
     }
+    System.out.println("------------");
+  }
+
+  public void showMemory(MemoryBlock[] realMemory) {
+    System.out.println("---- RM ----");
+    for (int blockIter = 0; blockIter < RealMemory.MAX_MEMORY_BLOCKS; blockIter++) {
+      System.out.print("BLOCK" + blockIter + " ");
+      for (int i = 0; i < 16; i++) {
+        System.out.print(i + ":" + realMemory[blockIter].getWord(i).getValue() + " ");
+      }
+      System.out.print('\n');
+    }
+    System.out.println("------------");
   }
 
   public static void resolveInterrupts(String interrupt, String data) {
@@ -250,5 +271,19 @@ public class PhysicalMachine {
    }*/
   public static void clearZF() {
     sf[2] = 0;
+  }
+
+  public void initRealMemory() {
+    realMemory = new MemoryBlock[MAX_REAL_MEMORY_BLOCKS];
+    for (int i = 0; i < MAX_REAL_MEMORY_BLOCKS; i++) {
+      realMemory[i] = new MemoryBlock();
+    }
+  }
+
+  public void syncMemory(VirtualMachine vm) {
+    MemoryBlock pageTable = realMemory[vm.ptr];
+    for (int i = 0; i < VirtualMemory.MAX_VIRTUAL_MEMORY_BLOCKS; i++) {
+      realMemory[pageTable.getWord(i).getIntValue()] = vm.memory.getBlock(i);
+    }
   }
 }

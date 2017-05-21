@@ -1,11 +1,15 @@
-public class MemoryBlock {
-  private Word[] data;
-  public int memoryBlockSize;
+package Memory;
 
-  MemoryBlock(int blockSize) {
-    data = new Word[blockSize];
+public class MemoryBlock {
+  public static int BLOCK_SIZE = 16;
+  private Word[] data;
+  public boolean free;
+
+  public MemoryBlock() {
+    data = new Word[BLOCK_SIZE];
     for (int i = 0; i < data.length; i++)
       data[i] = new Word();
+    setFree(true);
   }
 
   public Word getWord(int index) {
@@ -14,10 +18,6 @@ public class MemoryBlock {
 
   public void setWord(int index, Word value) {
     data[index] = value;
-  }
-
-  public int getBlockSize() {
-    return memoryBlockSize;
   }
 
   public void push(String data, int sp) {
@@ -39,5 +39,13 @@ public class MemoryBlock {
 
   public void pushData(int offset, String data) {
     this.data[offset].setValue(data);
+  }
+
+  public void setFree(boolean free) {
+    this.free = free;
+  }
+
+  public boolean isEmpty() {
+    return free;
   }
 }

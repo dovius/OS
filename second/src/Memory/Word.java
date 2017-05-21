@@ -1,3 +1,5 @@
+package Memory;
+
 public class Word {
 
   private String data;
@@ -16,10 +18,18 @@ public class Word {
 
   public int getIntValue() {
     try {
-      return Integer.parseInt(data, 16);
+      return Integer.valueOf(data);
     } catch (NumberFormatException e) {
       return 0;
     }
+  }
+
+  public void setIntValue(int integer) {
+    String stringInt = String.valueOf(integer);
+    while (stringInt.length() < 4) {
+      stringInt = "0" + stringInt;
+    }
+    setValue(stringInt);
   }
 
   public String getValue() {
@@ -38,9 +48,4 @@ public class Word {
     }
   }
 
-  public void setIntValue(int s) {
-    data = Integer.toHexString(s);
-    if (data.length() > 4)
-      data = data.substring(data.length() - 4, data.length());
-  }
 }

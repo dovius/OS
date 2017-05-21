@@ -1,7 +1,8 @@
+package Memory;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.util.ArrayList;
 
 /**
  * Created by dovydas on 17.3.8.
