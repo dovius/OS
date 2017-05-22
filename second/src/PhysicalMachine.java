@@ -1,6 +1,10 @@
 import Memory.*;
+import Process.StartStopProcess;
+import Process.Process;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -12,6 +16,7 @@ public class PhysicalMachine {
   private ExternalMemory externalMemory;
   public MemoryBlock[] realMemory;
   public Paging paging;
+  public Kernel kernel;
   public static ArrayList<Integer> programs = new ArrayList<>();
   public static byte mode;
   public static int sp;
@@ -30,13 +35,19 @@ public class PhysicalMachine {
   public PhysicalMachine() {
     cpu = new CPU();
     externalMemory = new ExternalMemory();
+    //utils
     paging = new Paging();
+    kernel = new Kernel();
     setRegisters();
     initRealMemory();
   }
 
   public void run() {
     try {
+      //created startStop process
+      Process startStop = new StartStopProcess();
+      kernel.createProcess(null, startStop);
+      kernel.planner();
       loadProgram("program.txt");
       ExternalMemory.read(programs.get(0), 0);
       VirtualMachine virtualMachine = new VirtualMachine();
@@ -52,7 +63,7 @@ public class PhysicalMachine {
       System.out.println("### VM started program");
       String com;
       while (!(com = getCommand(virtualMachine)).equals("HALT")) {
-        PhysicalMachine.resolveCommand(com, virtualMachine);
+        resolveCommand(com, virtualMachine);
         syncMemory(virtualMachine);
         System.out.println("command executed: " + com);
         showMemory(virtualMachine);
@@ -89,7 +100,7 @@ public class PhysicalMachine {
       programs.add(program.length() * 2);
       externalMemory.write(program.toCharArray(), 0);
     } catch (IOException e) {
-      e.printStackTrace();
+      System.out.println(" load program error");
     }
   }
 
@@ -98,7 +109,7 @@ public class PhysicalMachine {
     return result;
   }
 
-  public static String resolveCommand(String line, VirtualMachine vm) throws Exception {
+  public String resolveCommand(String line, VirtualMachine vm) throws Exception {
     if (line.substring(0, 3).equals("ADD")) {
       vm.ADD();
     } else if (line.substring(0, 3).equals("SUB")) {
@@ -199,14 +210,14 @@ public class PhysicalMachine {
     System.out.println("------------");
   }
 
-  public static void resolveInterrupts(String interrupt, String data) {
+  public void resolveInterrupts(String interrupt, String data) {
     if (interrupt.equals("PD")) {
       System.out.println(data);
     }
   }
 
 
-  public static void handleInterrupt(VirtualMachine vm, String line) {
+  public void handleInterrupt(VirtualMachine vm, String line) {
     if (si == 2) {
       String data = vm.PD(line.substring(2, 3), line.substring(3, 4));
       resolveInterrupts(line.substring(0, 2), data);

@@ -17,7 +17,6 @@ public class ExternalMemory {
       file = new RandomAccessFile("HDD", "rw");
     } catch (FileNotFoundException e) {
       System.out.println("Error creating HDD");
-      e.printStackTrace();
     }
     try {
       for (int i = 0; i < DISK_SIZE_BYTES / 2; ++i) {
@@ -26,7 +25,6 @@ public class ExternalMemory {
       }
     } catch (IOException e) {
       System.out.println("Error initializing HDD");
-      e.printStackTrace();
     }
   }
 
@@ -38,7 +36,7 @@ public class ExternalMemory {
       file.seek(offset);
       file.writeChars(new String(data));
     } catch (IOException e) {
-      e.printStackTrace();
+      System.out.println(" write error");
     }
   }
 
@@ -55,7 +53,7 @@ public class ExternalMemory {
       }
       file.read();
     } catch (IOException e) {
-      e.printStackTrace();
+      System.out.println(" read error");
     }
     return dataRead;
   }

@@ -19,7 +19,8 @@ public class Word {
   public int getIntValue() {
     try {
       return Integer.valueOf(data);
-    } catch (NumberFormatException e) {
+    } catch (Exception e) {
+      System.out.println("error word");
       return 0;
     }
   }

@@ -20,7 +20,7 @@ public class VirtualMachine {
   }
 
   // TODO interuptai
-  public void fillMemory(int ptr) throws IOException, NumberFormatException {
+  public void fillMemory(int ptr) throws IOException {
     this.ptr = ptr;
     String program = ExternalMemory.read(PhysicalMachine.programs.get(0), 0);
     String[] statements = program.split(";");
@@ -48,7 +48,7 @@ public class VirtualMachine {
     pc = 0;
   }
 
-  public boolean checkStatement(String statement) throws IOException, NumberFormatException {
+  public boolean checkStatement(String statement) throws IOException {
     for (String command : commands) {
       if (command.toLowerCase().replace("*", "").equals(statement.toLowerCase())) {
         return true;
