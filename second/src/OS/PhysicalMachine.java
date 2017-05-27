@@ -1,11 +1,13 @@
+package OS;
+
 import Memory.*;
-import Process.StartStopProcess;
-import Process.Process;
+import Process.StartStop;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 /**
  * Created by dovydas on 17.3.8.
@@ -44,43 +46,41 @@ public class PhysicalMachine {
 
   public void run() {
     try {
-      //created startStop process
-      Process startStop = new StartStopProcess();
-      kernel.createProcess(null, startStop);
+      kernel.createProcess(null, new StartStop());
       kernel.planner();
-      loadProgram("program.txt");
-      ExternalMemory.read(programs.get(0), 0);
-      VirtualMachine virtualMachine = new VirtualMachine();
-      ptr = paging.getFreeBlock(realMemory);
-      realMemory[ptr] = paging.getPageTable(realMemory);
-      virtualMachine.fillMemory(ptr);
-      mode = 1;
+      kernel.run();
 
-      System.out.println("### VM memory filled");
-      showMemory(virtualMachine);
-      showRegisters(virtualMachine);
-
-      System.out.println("### VM started program");
-      String com;
-      while (!(com = getCommand(virtualMachine)).equals("HALT")) {
-        resolveCommand(com, virtualMachine);
-        syncMemory(virtualMachine);
-        System.out.println("command executed: " + com);
-        showMemory(virtualMachine);
-        showMemory(realMemory);
-        showRegisters(virtualMachine);
-        if (Main.stepMode) {
-          System.in.read();
-        }
-      }
-
-      System.out.println("### Vm executed program");
-      showMemory(virtualMachine, 0);
-      showMemory(virtualMachine, 1);
-      showRegisters(virtualMachine);
-      freeMemory(virtualMachine, 2);
-    } catch (IOException e) {
-      System.out.println("memory error " + e);
+//      loadProgram("program.txt");
+//      ExternalMemory.read(programs.get(0), 0);
+//      VirtualMachine virtualMachine = new VirtualMachine();
+//      ptr = paging.getFreeBlock(realMemory);
+//      realMemory[ptr] = paging.getPageTable(realMemory);
+//      virtualMachine.fillMemory(ptr);
+//      mode = 1;
+//
+//      System.out.println("### VM memory filled");
+//      showMemory(virtualMachine);
+//      showRegisters(virtualMachine);
+//
+//      System.out.println("### VM started program");
+//      String com;
+//      while (!(com = getCommand(virtualMachine)).equals("HALT")) {
+//        resolveCommand(com, virtualMachine);
+//        syncMemory(virtualMachine);
+//        System.out.println("command executed: " + com);
+//        showMemory(virtualMachine);
+//        showMemory(realMemory);
+//        showRegisters(virtualMachine);
+//        if (Main.stepMode) {
+//          System.in.read();
+//        }
+//      }
+//
+//      System.out.println("### Vm executed program");
+//      showMemory(virtualMachine, 0);
+//      showMemory(virtualMachine, 1);
+//      showRegisters(virtualMachine);
+//      freeMemory(virtualMachine, 2);
     } catch (Exception e) {
       System.out.println("Error executing VM commands ");
     }
@@ -102,11 +102,6 @@ public class PhysicalMachine {
     } catch (IOException e) {
       System.out.println(" load program error");
     }
-  }
-
-  public String readProgram(int offset) {
-    String result = new String();
-    return result;
   }
 
   public String resolveCommand(String line, VirtualMachine vm) throws Exception {
@@ -143,7 +138,7 @@ public class PhysicalMachine {
     } else if (line.equals("PRNL")) {
       vm.PRNL();
     } else if (line.substring(0, 2).equals("GD")) {
-      vm.GD(line.substring(2, 3), line.substring(3, 4));
+      si = 1;
     } else if (line.substring(0, 2).equals("PD")) {
       si = 2;
     } else if (line.substring(0, 2).equals("PP")) {
@@ -210,10 +205,15 @@ public class PhysicalMachine {
     System.out.println("------------");
   }
 
-  public void resolveInterrupts(String interrupt, String data) {
+  public String resolveInterrupts(String interrupt, String data) {
     if (interrupt.equals("PD")) {
       System.out.println(data);
     }
+    if (interrupt.equals("GD")) {
+      Scanner reader = new Scanner(System.in);  // Reading from System.in
+      return reader.nextLine();
+    }
+    return null;
   }
 
 
@@ -222,6 +222,11 @@ public class PhysicalMachine {
       String data = vm.PD(line.substring(2, 3), line.substring(3, 4));
       resolveInterrupts(line.substring(0, 2), data);
       System.out.println();
+    }
+    else if (si == 1) {
+      String data = null;
+      vm.GD(line.substring(2, 3), line.substring(3, 4));
+      data = resolveInterrupts(line.substring(0, 2), data);
     }
   }
 
