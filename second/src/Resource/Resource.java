@@ -1,5 +1,9 @@
 package Resource;
+
 import Process.Process;
+
+import java.util.HashMap;
+import java.util.Map;
 
 
 /**
@@ -10,8 +14,21 @@ public class Resource {
   private int RID;
   private String type;
   private int PID;
-  private State state;
+  private ResourceState resourceState;
   private Process creator;
+  private Map<Process, Integer> waitingProcesses = new HashMap<>();
+
+  public Resource() {
+    setResourceState(ResourceState.BLOCKED);
+  }
+
+  public Map<Process, Integer> getWaitingProcesses() {
+    return waitingProcesses;
+  }
+
+//  public void addWaitingProcesses(Process waitingProcesses) {
+//    waitingProcesses.add(waitingProcesses);
+//  }
 
   public Process getCreator() {
     return creator;
@@ -45,12 +62,12 @@ public class Resource {
     this.PID = PID;
   }
 
-  public State getState() {
-    return state;
+  public ResourceState getResourceState() {
+    return resourceState;
   }
 
-  public void setState(State state) {
-    this.state = state;
+  public void setResourceState(ResourceState resourceState) {
+    this.resourceState = resourceState;
   }
 
   public String getName() {
@@ -60,6 +77,4 @@ public class Resource {
   public void setName(String name) {
     this.name = name;
   }
-
-
 }

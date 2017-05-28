@@ -3,6 +3,7 @@ package OS;
 import Process.Process;
 import Process.State;
 import Resource.Resource;
+import Resource.ResourceState;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +35,7 @@ public class Kernel {
 
 
   public void createProcess(Process parentProcess, Process createdProcess) {
-    System.out.println("process " + createdProcess.getName() + " created");
+    System.out.println(createdProcess.getName() + " created");
     allProcesses.add(createdProcess);
     createdProcess.setState(State.READY);
     readyProcesses.add(createdProcess);
@@ -48,8 +49,25 @@ public class Kernel {
     //add child?
   }
 
+  public void destroyProcess(Process p){
+    System.out.println("Destroying process: " + p.getName());
+    if(p.getParent() != null){
+      p.getParent().removeChild(p);
+    }
+
+    p.destroyChildren();
+    p.releaseResources();
+    p.destroyResources();
+
+    allProcesses.remove(p);
+    readyProcesses.remove(p);
+    blockedProcesses.remove(p);
+
+    System.out.println("Finished destroying process: " + p);
+  }
+
   public void createResource(Process owner, Resource resource) {
-    System.out.println("resource " + resource.getName() + " created");
+    System.out.println(resource.getName() + " created");
     resource.setCreator(owner);
     owner.addResource(resource);
     resources.add(resource);
@@ -61,35 +79,35 @@ public class Kernel {
     process.execute(this);
   }
 
-  public void planner() {
-    Process firstReady = readyProcesses.peek();
-    //is current process blocked?
-    if (currentProcess != null && currentProcess.getState() == State.BLOCK) {
-      blockedProcesses.add(currentProcess);
-      currentProcess = null;
-    }
-    if(currentProcess == null){
-      if(firstReady == null){
-        System.out.println("all processes is blocked");
-      }
-      else{
-        System.out.println("planner is changing processes");
-        firstReady = readyProcesses.poll();
-        // really?
-        currentProcess = firstReady;
-        runProcess(firstReady);
-      }
-    }
-    else{
-      if(firstReady == null){
-        System.out.println("No other ready processes, starting current one");
-      }
-      else if(firstReady.getPriority() > currentProcess.getPriority()){
-        System.out.println("Current process has lower priority");
-        firstReady = readyProcesses.poll();
-        runProcess(firstReady);
-        currentProcess.setState(State.READY);
+  public void processPlanner() {
+    while (true) {
+      if (currentProcess != null && currentProcess.getState() != State.BLOCK) {
         readyProcesses.add(currentProcess);
+      }
+      if (readyProcesses.peek() != null) {
+        currentProcess = readyProcesses.poll();
+        runProcess(currentProcess);
+      } else {
+        System.out.println("no mo ready processes. sleeping..");
+      }
+    }
+  }
+
+  public void resourceDistributor(Process askingProc, String requestedResource, int amount ) {
+    navigateForResource(askingProc, requestedResource);
+    for (Process process : blockedProcesses) {
+      navigateForResource(process, requestedResource);
+    }
+    processPlanner();
+  }
+
+  //todo refactor name. Resource size..
+  private void navigateForResource(Process askingProc, String requestedResource) {
+    for (Resource resource : askingProc.getWaitingResources()) {
+      if (ResourceState.FREE == resource.getResourceState() && resource.getName().equalsIgnoreCase(requestedResource)) {
+        blockedProcesses.remove(askingProc);
+        askingProc.setState(State.READY);
+        readyProcesses.add(askingProc);
       }
     }
   }
@@ -105,6 +123,50 @@ public class Kernel {
     }
     return readyProcess;
   }
+
+  public void requestResources(Process askingProc, String requestedResource, int amount){
+    System.out.println("Process: " + askingProc.getName() + " requested " + amount + " of resource: " + requestedResource);
+    Resource resource = getResource(requestedResource);
+    makeProcessBlocked(askingProc);
+    askingProc.addWaitingResource(resource);
+    if (resource != null) {
+      resource.getWaitingProcesses().put(askingProc, amount);
+    }
+    resourceDistributor(askingProc, requestedResource, amount);
+  }
+
+  public Resource getResource(String resExtName){
+    for (Resource resource : resources) {
+      if (resource.getName().equalsIgnoreCase(resExtName)) {
+        return resource;
+      }
+    }
+    System.out.println("resource " + resExtName + " is not found");
+    return null;
+  }
+
+  public void freeResource(Process process, Resource resource){
+    System.out.println("Freeing resource: " + resource + " ...");
+//    Resource r = getResource(resource.getrIDI());
+//    if(r != null){
+//      process.releaseResource(resource);
+//      //??
+//      processPlanner();
+//    }
+//    Logger.log("Finished freeing resource: " + resource);
+  }
+
+//  public Process getHighestPriorityProcess() {
+//    int priority = 0;
+//    Process highestProcess = null;
+//    for (Process process : readyProcesses) {
+//      if (process.getPriority() >= priority) {
+//        priority = process.getPriority();
+//        highestProcess = process;
+//      }
+//    }
+//    return highestProcess;
+//  }
 
   public List<Resource> getResources() {
     return resources;
@@ -136,5 +198,10 @@ public class Kernel {
 
   public void setCurrentProcess(Process currentProcess) {
     this.currentProcess = currentProcess;
+  }
+
+  public void makeProcessBlocked(Process process) {
+    process.setState(State.BLOCK);
+    blockedProcesses.add(process);
   }
 }

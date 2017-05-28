@@ -47,7 +47,7 @@ public class PhysicalMachine {
   public void run() {
     try {
       kernel.createProcess(null, new StartStop());
-      kernel.planner();
+      kernel.processPlanner();
       kernel.run();
 
 //      loadProgram("program.txt");
