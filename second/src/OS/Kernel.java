@@ -74,7 +74,7 @@ public class Kernel {
   }
 
   public void runProcess(Process process) {
-    System.out.println("running process " + process.getName());
+    System.out.println(" - > running process " + process.getName());
     process.setState(State.RUN);
     process.execute(this);
   }
@@ -98,6 +98,7 @@ public class Kernel {
     for (Process process : blockedProcesses) {
       navigateForResource(process, requestedResource);
     }
+    readyProcesses.remove(askingProc);
     processPlanner();
   }
 
@@ -108,6 +109,9 @@ public class Kernel {
         blockedProcesses.remove(askingProc);
         askingProc.setState(State.READY);
         readyProcesses.add(askingProc);
+        askingProc.increaseStep();
+        resource.setResourceState(ResourceState.BLOCKED);
+        processPlanner();
       }
     }
   }
@@ -156,18 +160,6 @@ public class Kernel {
 //    Logger.log("Finished freeing resource: " + resource);
   }
 
-//  public Process getHighestPriorityProcess() {
-//    int priority = 0;
-//    Process highestProcess = null;
-//    for (Process process : readyProcesses) {
-//      if (process.getPriority() >= priority) {
-//        priority = process.getPriority();
-//        highestProcess = process;
-//      }
-//    }
-//    return highestProcess;
-//  }
-
   public List<Resource> getResources() {
     return resources;
   }
@@ -201,6 +193,7 @@ public class Kernel {
   }
 
   public void makeProcessBlocked(Process process) {
+    readyProcesses.remove(process);
     process.setState(State.BLOCK);
     blockedProcesses.add(process);
   }

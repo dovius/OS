@@ -6,6 +6,7 @@ package Process;
 public class JobGovernor extends Process{
   public JobGovernor() {
     setName(this.getClass().getName());
-    setPriority(98);
+    //?
+    setPriority(9);
   }
 }

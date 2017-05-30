@@ -1,8 +1,10 @@
 package Process;
 
-import Resource.InputResource;
+import Resource.Input;
 import OS.*;
 import Resource.MOSEnd;
+import Resource.Stack;
+import Resource.SupervisorMemory;
 
 /**
  * Created by dovydas on 17.5.22.
@@ -18,15 +20,17 @@ public class StartStop extends Process {
   public void execute(Kernel kernel) {
     switch (getStep()) {
       case 1:
-        kernel.createResource(this, new InputResource());
+        kernel.createResource(this, new Input());
         kernel.createResource(this, new MOSEnd());
+        kernel.createResource(this, new Stack());
+        kernel.createResource(this, new SupervisorMemory());
         increaseStep();
         break;
       case 2:
+        kernel.createProcess(this, new Read());
         kernel.createProcess(this, new Main());
         kernel.createProcess(this, new Interrupt());
         kernel.createProcess(this, new JCL());
-        kernel.createProcess(this, new JobGovernor());
         kernel.createProcess(this, new Loader());
         kernel.createProcess(this, new Main());
         kernel.createProcess(this, new VirtualMachine());

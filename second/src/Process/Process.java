@@ -90,6 +90,10 @@ public abstract class Process implements Comparable {
     this.step++;
   }
 
+  public void setStep(int step) {
+    this.step = step;
+  }
+
   public List<Resource> getResources() {
     return resources;
   }

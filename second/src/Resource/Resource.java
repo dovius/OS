@@ -22,6 +22,15 @@ public class Resource {
     setResourceState(ResourceState.BLOCKED);
   }
 
+  private int executionTime = 1;
+  public int getExecutionTime() {
+    return executionTime;
+  }
+
+  public void setExecutionTime(int executionTime) {
+    this.executionTime = executionTime;
+  }
+
   public Map<Process, Integer> getWaitingProcesses() {
     return waitingProcesses;
   }

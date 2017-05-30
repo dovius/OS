@@ -6,6 +6,7 @@ package Process;
 public class Interrupt extends Process {
   public Interrupt() {
     setName(this.getClass().getName());
-    setPriority(97);
+    //duno
+    setPriority(11);
   }
 }

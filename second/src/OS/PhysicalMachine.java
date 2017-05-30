@@ -15,7 +15,7 @@ import java.util.Scanner;
 public class PhysicalMachine {
   public static int MAX_REAL_MEMORY_BLOCKS = 16;
   private CPU cpu;
-  private ExternalMemory externalMemory;
+  private static ExternalMemory externalMemory;
   public MemoryBlock[] realMemory;
   public Paging paging;
   public Kernel kernel;
@@ -50,44 +50,43 @@ public class PhysicalMachine {
       kernel.processPlanner();
       kernel.run();
 
-//      loadProgram("program.txt");
-//      ExternalMemory.read(programs.get(0), 0);
-//      VirtualMachine virtualMachine = new VirtualMachine();
-//      ptr = paging.getFreeBlock(realMemory);
-//      realMemory[ptr] = paging.getPageTable(realMemory);
-//      virtualMachine.fillMemory(ptr);
-//      mode = 1;
-//
-//      System.out.println("### VM memory filled");
-//      showMemory(virtualMachine);
-//      showRegisters(virtualMachine);
-//
-//      System.out.println("### VM started program");
-//      String com;
-//      while (!(com = getCommand(virtualMachine)).equals("HALT")) {
-//        resolveCommand(com, virtualMachine);
-//        syncMemory(virtualMachine);
-//        System.out.println("command executed: " + com);
-//        showMemory(virtualMachine);
-//        showMemory(realMemory);
-//        showRegisters(virtualMachine);
-//        if (Main.stepMode) {
-//          System.in.read();
-//        }
-//      }
-//
-//      System.out.println("### Vm executed program");
-//      showMemory(virtualMachine, 0);
-//      showMemory(virtualMachine, 1);
-//      showRegisters(virtualMachine);
-//      freeMemory(virtualMachine, 2);
+      loadProgram("program.txt");
+      VirtualMachine virtualMachine = new VirtualMachine();
+      ptr = paging.getFreeBlock(realMemory);
+      realMemory[ptr] = paging.getPageTable(realMemory);
+      virtualMachine.fillMemory(ptr);
+      mode = 1;
+
+      System.out.println("### VM memory filled");
+      showMemory(virtualMachine);
+      showRegisters(virtualMachine);
+
+      System.out.println("### VM started program");
+      String com;
+      while (!(com = getCommand(virtualMachine)).equals("HALT")) {
+        resolveCommand(com, virtualMachine);
+        syncMemory(virtualMachine);
+        System.out.println("command executed: " + com);
+        showMemory(virtualMachine);
+        showMemory(realMemory);
+        showRegisters(virtualMachine);
+        if (Main.stepMode) {
+          System.in.read();
+        }
+      }
+
+      System.out.println("### Vm executed program");
+      showMemory(virtualMachine, 0);
+      showMemory(virtualMachine, 1);
+      showRegisters(virtualMachine);
+      freeMemory(virtualMachine, 2);
     } catch (Exception e) {
       System.out.println("Error executing VM commands ");
     }
   }
 
 
-  public void loadProgram(String fileName) {
+  public static void loadProgram(String fileName) {
     try (FileReader fr = new FileReader(fileName);
          BufferedReader br = new BufferedReader(fr)) {
       int c;
